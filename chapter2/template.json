@@ -44,7 +44,7 @@
 				"Scheme": "internet-facing"
 			}
 		},
-		"SecurityGroup": {
+		"WebServerSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
 				"GroupDescription": "awsinaction-sg",
@@ -70,7 +70,7 @@
 					"IpProtocol": "tcp",
 					"FromPort": "3306",
 					"ToPort": "3306",
-					"SourceSecurityGroupName": {"Ref": "SecurityGroup"}
+					"SourceSecurityGroupName": {"Ref": "WebServerSecurityGroup"}
 				}]
 			}
 		},
@@ -139,7 +139,7 @@
 				"EbsOptimized": false,
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
-				"SecurityGroups": [{"Ref": "SecurityGroup"}],
+				"SecurityGroups": [{"Ref": "WebServerSecurityGroup"}],
 				"KeyName": {"Ref": "KeyName"},
 				"UserData" : {"Fn::Base64": {"Fn::Join": ["", [
 					"#!/bin/bash -xe\n",
