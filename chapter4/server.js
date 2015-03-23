@@ -2,11 +2,13 @@
 // node server.js
 
 var AWS = require('aws-sdk');
-var ec2 = new AWS.EC2({"region": "us-east-1"});
+var ec2 = new AWS.EC2({
+	"region": "us-east-1"
+});
 
-step1_getAmiId();
+step1GetAmiId();
 
-function step1_getAmiId() {
+function step1GetAmiId() {
 	ec2.describeImages({
 		"Filters": [{
 			"Name": "description",
@@ -16,12 +18,12 @@ function step1_getAmiId() {
 		if (err) {
 			throw err;
 		} else {
-			step2_getVpcId(data.Images[0].ImageId);
+			step2GetVpcId(data.Images[0].ImageId);
 		}
 	});
 }
 
-function step2_getVpcId(amiId) {
+function step2GetVpcId(amiId) {
 	ec2.describeVpcs({
 		"Filters": [{
 			"Name": "isDefault",
@@ -31,13 +33,12 @@ function step2_getVpcId(amiId) {
 		if (err) {
 			throw err;
 		} else {
-			step3_getSubnetId(amiId, data.Vpcs[0].VpcId);
+			step3GetSubnetId(amiId, data.Vpcs[0].VpcId);
 		}
 	});
 }
 
-function step3_getSubnetId(amiId, vpcId) {
-
+function step3GetSubnetId(amiId, vpcId) {
 	ec2.describeSubnets({
 		"Filters": [{
 			"Name": "vpc-id",
@@ -47,12 +48,12 @@ function step3_getSubnetId(amiId, vpcId) {
 		if (err) {
 			throw err;
 		} else {
-			step4_createSecurityGroup(amiId, vpcId, data.Subnets[0].SubnetId);
+			step4CreateSecurityGroup(amiId, vpcId, data.Subnets[0].SubnetId);
 		}
 	});
 }
 
-function step4_createSecurityGroup(amiId, vpcId, subnetId) {
+function step4CreateSecurityGroup(amiId, vpcId, subnetId) {
 	ec2.createSecurityGroup({
 		"Description": "My security group",
 		"GroupName": "mysecuritygroup",
@@ -72,14 +73,14 @@ function step4_createSecurityGroup(amiId, vpcId, subnetId) {
 				if (err) {
 					throw err;
 				} else {
-					step5_createServer(amiId, vpcId, subnetId, groupId);
+					step5CreateServer(amiId, vpcId, subnetId, groupId);
 				}
 			});
 		}
 	});
 }
 
-function step5_createServer(amiId, vpcId, subnetId, groupId) {
+function step5CreateServer(amiId, vpcId, subnetId, groupId) {
 	ec2.runInstances({
 		"ImageId": amiId,
 		"MinCount": 1,
@@ -109,7 +110,7 @@ function step5_createServer(amiId, vpcId, subnetId, groupId) {
 							var publicName = data.Reservations[0].Instances[0].PublicDnsName;
 							console.log(instanceId + ' is accepting SSH connections under ' + publicName);
 							console.log('ssh -i mykey.pem ec2-user@' + publicName);
-							step6_wait(groupId, instanceId);
+							step6Wait(groupId, instanceId);
 						}
 					});
 				}
@@ -118,20 +119,20 @@ function step5_createServer(amiId, vpcId, subnetId, groupId) {
 	});
 }
 
-function step6_wait(groupId, instanceId) {
+function step6Wait(groupId, instanceId) {
 	console.log('Press [Enter] key to terminate ' + instanceId + ' ...');
 	process.stdin.setEncoding('utf8');
 	function listener() {
 		var chunk = process.stdin.read();
 		if (chunk !== null && chunk.indexOf('\n') !== -1) {
 			process.stdin.removeListener('readable', listener);
-			step6_destroyServer(groupId, instanceId) ;
+			step7DestroyServer(groupId, instanceId) ;
 		}
 	}
 	process.stdin.on('readable', listener);
 }
 
-function step6_destroyServer(groupId, instanceId) {
+function step7DestroyServer(groupId, instanceId) {
 	ec2.terminateInstances({
 		"InstanceIds": [instanceId]
 	}, function(err) {
@@ -145,14 +146,14 @@ function step6_destroyServer(groupId, instanceId) {
 				if (err) {
 					throw err;
 				} else {
-					step7_deleteSecurityGroup(groupId);
+					step8DeleteSecurityGroup(groupId);
 				}
 			});
 		}
 	});
 }
 
-function step7_deleteSecurityGroup(groupId) {
+function step8DeleteSecurityGroup(groupId) {
 	ec2.deleteSecurityGroup({
 		"GroupId": groupId
 	}, function(err) {
