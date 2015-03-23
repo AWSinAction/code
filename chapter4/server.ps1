@@ -3,6 +3,7 @@
 # Set-ExecutionPolicy remotesigned
 # Close the PowerShell window (you don't need Administrator privileges to run the scripts)
 # Right click on the * .ps1 file and select Run with PowerShell
+$ErrorActionPreference = "Stop"
 
 $AMIID=aws ec2 describe-images --filters "Name=description, Values=Amazon Linux AMI 2014.09.2 x86_64 HVM EBS" --query "Images[0].ImageId" --output text
 $VPCID=aws ec2 describe-vpcs --filter "Name=isDefault, Values=true" --query "Vpcs[0].VpcId" --output text
@@ -14,7 +15,7 @@ Write-Host "waiting for $INSTANCEID ..."
 aws ec2 wait instance-running --instance-ids $INSTANCEID
 $PUBLICNAME=aws ec2 describe-instances --instance-ids $INSTANCEID --query "Reservations[0].Instances[0].PublicDnsName" --output text
 Write-Host "$INSTANCEID is accepting SSH connections under $PUBLICNAME"
-Write-Host "ssh -i mykey.pem ec2-user@$PUBLICNAME"
+Write-Host "connect to $PUBLICNAME via SSH as user ec2-user"
 Write-Host "Press [Enter] key to terminate $INSTANCEID ..."
 Read-Host
 aws ec2 terminate-instances --instance-ids $INSTANCEID
@@ -23,3 +24,4 @@ aws ec2 wait instance-terminated --instance-ids $INSTANCEID
 aws ec2 delete-security-group --group-id $SGID
 Write-Host "done."
 Write-Host "Press [Enter] key to exit ..."
+Read-Host
