@@ -15,3 +15,4 @@ aws ec2 terminate-instances --instance-ids $INSTANCEID
 echo "terminating $INSTANCEID ..."
 aws ec2 wait instance-terminated --instance-ids $INSTANCEID
 aws ec2 delete-security-group --group-id $SGID
+echo "done."

@@ -2,7 +2,7 @@
 # to allow unsigned scripts to be executed. To do so enter:
 # Set-ExecutionPolicy remotesigned
 # Close the PowerShell window (you don't need Administrator privileges to run the scripts)
-# Right click on the * .ps1 file and select Run with PowerShell
+# Right click on the *.ps1 file and select Run with PowerShell
 $ErrorActionPreference = "Stop"
 
 $AMIID=aws ec2 describe-images --filters "Name=description, Values=Amazon Linux AMI 2014.09.2 x86_64 HVM EBS" --query "Images[0].ImageId" --output text
@@ -23,5 +23,3 @@ Write-Host "terminating $INSTANCEID ..."
 aws ec2 wait instance-terminated --instance-ids $INSTANCEID
 aws ec2 delete-security-group --group-id $SGID
 Write-Host "done."
-Write-Host "Press [Enter] key to exit ..."
-Read-Host
