@@ -58,7 +58,7 @@ var list = blessed.list({
 	mouse: true,
 	keys: true,
 	vi: true,
-	label: 'Navigation',
+	label: 'actions',
 	items: ['list servers', 'create server', 'terminate server']
 });
 list.on('select', function(ev, i) {
