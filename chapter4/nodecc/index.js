@@ -12,7 +12,7 @@ var content = blessed.box({
 	parent: screen,
 	width: '70%',
 	height: '90%',
-	top: '0%',
+	top: '10%',
 	left: '30%',
 	border: {
 		type: 'none',
@@ -28,11 +28,17 @@ var progress = blessed.progressbar({
 	parent: screen,
 	width: '70%',
 	height: '10%',
-	top: '90%',
+	top: '0%',
 	left: '30%',
 	orientation: 'horizontal',
+	border: {
+		type: 'line',
+		fg: '#ffffff'
+	},
+	fg: 'white',
+	bg: 'blue',
 	barFg: 'green',
-	barBg: 'blue',
+	barBg: 'green',
 	filled: 0
 });
 
@@ -52,7 +58,8 @@ var list = blessed.list({
 	mouse: true,
 	keys: true,
 	vi: true,
-	items: ["list servers", "create server", "terminate server"]
+	label: 'Navigation',
+	items: ['list servers', 'create server', 'terminate server']
 });
 list.on('select', function(ev, i) {
 	content.border.type = 'line';
