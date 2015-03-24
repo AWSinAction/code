@@ -118,7 +118,7 @@ function open(i) {
 		});
 	} else if (i === 1) {
 		loading();
-		require('./lib/listAMIs.js')(function(err, amis) {
+		require('./lib/listAMIs.js')(function(err, result) {
 			loaded();
 			if (err) {
 				log('error', 'listAMIs cb err: ' + err);
@@ -130,12 +130,12 @@ function open(i) {
 					mouse: true,
 					keys: true,
 					vi: true,
-					items: amis
+					items: result.descriptions
 				});
 				content.append(amiList);
 				amiList.focus();
 				amiList.on('select', function(ev, i) {
-					var amiId = amis[i].split(":")[0];
+					var amiId = result.amiIds[i];
 					loading();
 					require('./lib/listSubnets.js')(function(err, subnetIds) {
 						loaded();

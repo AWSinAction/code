@@ -1,4 +1,4 @@
-var underscore = require('underscore');
+var jmespath = require('jmespath');
 var AWS = require('aws-sdk');
 var ec2 = new AWS.EC2({
 	"region": "us-east-1"
@@ -14,9 +14,9 @@ module.exports = function(cb) {
 		if (err) {
 			cb(err);
 		} else {
-			cb(null, underscore.map(data.Images, function(image) {
-				return image.ImageId + ": " + image.Description;
-			}));
+			var amiIds = jmespath.search(data, 'Images[*].ImageId');
+			var descriptions = jmespath.search(data, 'Images[*].Description');
+			cb(null, {"amiIds": amiIds, "descriptions": descriptions});
 		}
 	});
 };

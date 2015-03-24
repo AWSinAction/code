@@ -1,4 +1,4 @@
-var underscore = require('underscore');
+var jmespath = require('jmespath');
 var AWS = require('aws-sdk');
 var ec2 = new AWS.EC2({
 	"region": "us-east-1"
@@ -15,11 +15,8 @@ module.exports = function(cb) {
 		if (err) {
 			cb(err);
 		} else {
-			cb(null, underscore.flatten(underscore.map(data.Reservations, function(reservation) {
-				return underscore.map(reservation.Instances, function(instance) {
-					return instance.InstanceId;
-				});
-			})));
+			var instanceIds = jmespath.search(data, 'Reservations[].Instances[].InstanceId');
+			cb(null, instanceIds);
 		}
 	});
 };
