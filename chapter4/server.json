@@ -14,6 +14,12 @@
 		"Subnet": {
 			"Description": "Just select one of the available subnets",
 			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"InstanceType": {
+			"Description": "Select one of the possible instance types",
+			"Type": "String",
+			"Default": "t2.micro",
+			"AllowedValues": ["t2.micro", "t2.small", "t2.medium"]
 		}
 	},
 	"Mappings": {
@@ -47,7 +53,7 @@
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
-				"InstanceType": "t2.micro",
+				"InstanceType": {"Ref": "InstanceType"},
 				"KeyName": {"Ref": "KeyName"},
 				"SecurityGroupIds": [{"Ref": "SecurityGroup"}],
 				"SubnetId": {"Ref": "Subnet"}
