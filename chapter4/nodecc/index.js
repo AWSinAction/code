@@ -20,7 +20,7 @@ var content = blessed.box({
 	},
 	fg: 'white',
 	bg: 'blue',
-	content: '{bold}Node Control Center for AWS{/bold}\n\nPlease select one of the actions from the left and press return.\n\nYou can always go back with the left-arrow key.\n\nYou can terminate the application by pressing ESC or q.',
+	content: '{bold}Node Control Center for AWS{/bold}\n\nPlease select one of the actions from the left and press return.\n\nYou can always go back with the left arrow key.\n\nYou can terminate the application by pressing ESC or q.',
 	tags: true
 });
 
