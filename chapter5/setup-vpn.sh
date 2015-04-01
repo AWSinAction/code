@@ -2,7 +2,7 @@
  
 #IPSEC_PSK the shared secret
 #VPN_USER the vpn username
-#VPN_USER the vpn password
+#VPN_PASSWORD the vpn password
  
 PRIVATE_IP=`wget -q -O - 'http://instance-data/latest/meta-data/local-ipv4'`
 PUBLIC_IP=`wget -q -O - 'checkip.amazonaws.com'`
@@ -42,7 +42,7 @@ conn vpnpsk
 EOF
  
 cat > /etc/ipsec.secrets <<EOF
-$PUBLIC_IP %any : PSK "$${IPSEC_PSK}"
+$PUBLIC_IP %any : PSK "${IPSEC_PSK}"
 EOF
  
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
@@ -77,7 +77,7 @@ connect-delay 5000
 EOF
  
 cat > /etc/ppp/chap-secrets <<EOF
-$${VPN_USER} l2tpd $${VPN_USER} *
+${VPN_USER} l2tpd ${VPN_PASSWORD} *
 EOF
  
 iptables -t nat -A POSTROUTING -s 192.168.42.0/24 -o eth0 -j MASQUERADE

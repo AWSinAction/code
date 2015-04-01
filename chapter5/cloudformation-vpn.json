@@ -42,9 +42,12 @@
 					"yum-config-manager --enable epel\n",
 					"yum clean all\n",
 					"yum update -y aws-cfn-bootstrap\n",
+					"export IPSEC_PSK=", { "Ref" : "IPSecSharedSecret" }, "\n",
+					"export VPN_USER=", { "Ref" : "VPNUser" }, "\n",
+					"export VPN_PASSWORD=", { "Ref" : "VPNPassword" }, "\n",
+					"curl https://raw.githubusercontent.com/AWSinAction/code/master/chapter5/setup-vpn.sh | bash\n",
 					"/opt/aws/bin/cfn-init -v --stack ", { "Ref" : "AWS::StackName" }, " --resource EC2Instance --region ", { "Ref" : "AWS::Region" }, "\n",
-					"/opt/aws/bin/cfn-signal -e $? ",
-                       "--stack ", { "Ref" : "AWS::StackName" }, " --resource EC2Instance --region ", { "Ref" : "AWS::Region" }, "\n"
+					"/opt/aws/bin/cfn-signal -e $? ", "--stack ", { "Ref" : "AWS::StackName" }, " --resource EC2Instance --region ", { "Ref" : "AWS::Region" }, "\n"					
 				]]}}
 			},
 			"Metadata" : {
@@ -59,7 +62,7 @@
 						"files" : {
 							"/tmp/setup.mysql" : {
 								"content" : { "Fn::Join" : ["", [
-									"CREATE DATABASE ", { "Fn::GetAtt" : [ "EC2Instance", "PublicIp" ] }, ";\n"
+									"CREATE DATABASE"
 								]]},
 								"mode"  : "000644",
 								"owner" : "root",
