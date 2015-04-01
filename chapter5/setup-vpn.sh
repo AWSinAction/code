@@ -56,7 +56,6 @@ require chap = yes
 refuse pap = yes
 require authentication = yes
 name = l2tpd
-;ppp debug = yes
 pppoptfile = /etc/ppp/options.xl2tpd
 length bit = yes
 EOF

@@ -42,11 +42,15 @@
 					"yum-config-manager --enable epel\n",
 					"yum clean all\n",
 					"yum update -y aws-cfn-bootstrap\n",
+					"/opt/aws/bin/cfn-init -v --stack ", { "Ref" : "AWS::StackName" }, " --resource EC2Instance --region ", { "Ref" : "AWS::Region" }, "\n",
 					"export IPSEC_PSK=", { "Ref" : "IPSecSharedSecret" }, "\n",
 					"export VPN_USER=", { "Ref" : "VPNUser" }, "\n",
 					"export VPN_PASSWORD=", { "Ref" : "VPNPassword" }, "\n",
 					"curl https://raw.githubusercontent.com/AWSinAction/code/master/chapter5/setup-vpn.sh | bash\n",
-					"/opt/aws/bin/cfn-init -v --stack ", { "Ref" : "AWS::StackName" }, " --resource EC2Instance --region ", { "Ref" : "AWS::Region" }, "\n",
+					"service ipsec start\n",
+					"service xl2tpd start\n",
+					"chkconfig ipsec on\n",
+					"chkconfig xl2tpd on\n",
 					"/opt/aws/bin/cfn-signal -e $? ", "--stack ", { "Ref" : "AWS::StackName" }, " --resource EC2Instance --region ", { "Ref" : "AWS::Region" }, "\n"					
 				]]}}
 			},
@@ -57,18 +61,6 @@
 							"yum" : {
 								"openswan" : [],
 								"xl2tpd" : []
-							}
-						},
-						"services" : {
-							"sysvinit" : {
-								"ipsec" : {
-									"enabled" : "true",
-									"ensureRunning" : "true"
-								},
-								"xl2tpd" : {
-									"enabled" : "true",
-									"ensureRunning" : "true"
-								}
 							}
 						},
 						"files" : {
@@ -83,19 +75,44 @@
 						}
 					}
 				}
-    		}
+    		},
+			"CreationPolicy" : {
+				"ResourceSignal" : {
+					"Timeout" : "PT5M"
+				}
+			}
     	},
 		"InstanceSecurityGroup" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
-				"GroupDescription" : "Enable SSH access via port 22",
+				"GroupDescription" : "Enable access to VPN server",
 				"VpcId": {"Ref": "VPC"},
-				"SecurityGroupIngress" : [ {
-					"IpProtocol" : "-1",
-					"FromPort" : "-1",
-					"ToPort" : "-1",
-					"CidrIp" : "0.0.0.0/0"
-				} ]
+				"SecurityGroupIngress" : [
+					{
+						"IpProtocol" : "tcp",
+						"FromPort" : "22",
+						"ToPort" : "22",
+						"CidrIp" : "0.0.0.0/0"
+					},
+					{
+						"IpProtocol" : "udp",
+						"FromPort" : "500",
+						"ToPort" : "500",
+						"CidrIp" : "0.0.0.0/0"
+					},
+					{
+						"IpProtocol" : "udp",
+						"FromPort" : "1701",
+						"ToPort" : "1701",
+						"CidrIp" : "0.0.0.0/0"
+					},
+					{
+						"IpProtocol" : "udp",
+						"FromPort" : "4500",
+						"ToPort" : "4500",
+						"CidrIp" : "0.0.0.0/0"
+					}
+				]
 			}
 		}
 	},
