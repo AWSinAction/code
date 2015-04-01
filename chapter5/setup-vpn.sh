@@ -4,8 +4,8 @@
 #VPN_USER the vpn username
 #VPN_PASSWORD the vpn password
  
-PRIVATE_IP=`wget -q -O - 'http://instance-data/latest/meta-data/local-ipv4'`
-PUBLIC_IP=`wget -q -O - 'checkip.amazonaws.com'`
+PRIVATE_IP=`wget -q -O - 'http://169.254.169.254/latest/meta-data/local-ipv4'`
+PUBLIC_IP=`wget -q -O - 'http://169.254.169.254/latest/meta-data/public-ipv4'`
  
 cat > /etc/ipsec.conf <<EOF
 version 2.0

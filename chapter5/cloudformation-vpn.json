@@ -59,6 +59,18 @@
 								"xl2tpd" : []
 							}
 						},
+						"services" : {
+							"sysvinit" : {
+								"ipsec" : {
+									"enabled" : "true",
+									"ensureRunning" : "true"
+								},
+								"xl2tpd" : {
+									"enabled" : "true",
+									"ensureRunning" : "true"
+								}
+							}
+						},
 						"files" : {
 							"/tmp/setup.mysql" : {
 								"content" : { "Fn::Join" : ["", [
@@ -79,9 +91,9 @@
 				"GroupDescription" : "Enable SSH access via port 22",
 				"VpcId": {"Ref": "VPC"},
 				"SecurityGroupIngress" : [ {
-					"IpProtocol" : "tcp",
-					"FromPort" : "22",
-					"ToPort" : "22",
+					"IpProtocol" : "-1",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
 					"CidrIp" : "0.0.0.0/0"
 				} ]
 			}
