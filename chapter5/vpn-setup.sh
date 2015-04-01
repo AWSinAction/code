@@ -1,8 +1,8 @@
 #!/bin/sh
  
-#IPSEC_PSK the shared secret
-#VPN_USER the vpn username
-#VPN_PASSWORD the vpn password
+#param IPSEC_PSK the shared secret
+#param VPN_USER the vpn username
+#param VPN_PASSWORD the vpn password
  
 PRIVATE_IP=`wget -q -O - 'http://169.254.169.254/latest/meta-data/local-ipv4'`
 PUBLIC_IP=`wget -q -O - 'http://169.254.169.254/latest/meta-data/public-ipv4'`
@@ -11,7 +11,6 @@ cat > /etc/ipsec.conf <<EOF
 version 2.0
  
 config setup
-	dumpdir=/var/run/pluto/
 	nat_traversal=yes
 	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8,%v6:fd00::/8,%v6:fe80::/10
 	oe=off
@@ -59,22 +58,7 @@ name = l2tpd
 pppoptfile = /etc/ppp/options.xl2tpd
 length bit = yes
 EOF
- 
-cat > /etc/ppp/options.xl2tpd <<EOF
-ipcp-accept-local
-ipcp-accept-remote
-ms-dns 8.8.8.8
-ms-dns 8.8.4.4
-noccp
-auth
-crtscts
-idle 1800
-mtu 1280
-mru 1280
-lock
-connect-delay 5000
-EOF
- 
+
 cat > /etc/ppp/chap-secrets <<EOF
 ${VPN_USER} l2tpd ${VPN_PASSWORD} *
 EOF
