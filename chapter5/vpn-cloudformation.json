@@ -38,16 +38,13 @@
 				"ImageId" : "ami-1ecae776",
 				"SubnetId": {"Ref": "Subnet"},
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -xe\n",
-					"yum-config-manager --enable epel && yum clean all\n",
-					"/opt/aws/bin/cfn-init -v --stack ", { "Ref" : "AWS::StackName" }, " --resource EC2Instance --region ", { "Ref" : "AWS::Region" }, "\n",
+					"#!/bin/bash\n",
 					"export IPSEC_PSK=", { "Ref" : "IPSecSharedSecret" }, "\n",
 					"export VPN_USER=", { "Ref" : "VPNUser" }, "\n",
 					"export VPN_PASSWORD=", { "Ref" : "VPNPassword" }, "\n",
-					"curl https://raw.githubusercontent.com/AWSinAction/code/master/chapter5/vpn-setup.sh | bash\n",
-					"service ipsec start && service xl2tpd start\n",
-					"chkconfig ipsec on && chkconfig xl2tpd on\n",
-					"/opt/aws/bin/cfn-signal -e $? ", "--stack ", { "Ref" : "AWS::StackName" }, " --resource EC2Instance --region ", { "Ref" : "AWS::Region" }, "\n"					
+					"export STACK_NAME=", { "Ref" : "AWS::StackName" }, "\n",
+					"export REGION=", { "Ref" : "AWS::Region" }, "\n",
+					"curl https://raw.githubusercontent.com/AWSinAction/code/master/chapter5/vpn-setup.sh | bash\n"
 				]]}}
 			},
 			"Metadata" : {

@@ -1,12 +1,18 @@
 #!/bin/sh
- 
+
 #param IPSEC_PSK the shared secret
 #param VPN_USER the vpn username
 #param VPN_PASSWORD the vpn password
+#param STACK_NAME
+#param REGION
  
 PRIVATE_IP=`wget -q -O - 'http://169.254.169.254/latest/meta-data/local-ipv4'`
 PUBLIC_IP=`wget -q -O - 'http://169.254.169.254/latest/meta-data/public-ipv4'`
- 
+
+yum-config-manager --enable epel && yum clean all
+
+/opt/aws/bin/cfn-init -v --stack $STACK_NAME --resource EC2Instance --region $REGION
+
 cat > /etc/ipsec.conf <<EOF
 version 2.0
  
@@ -74,3 +80,8 @@ iptables-restore < /etc/iptables.rules
 echo 1 > /proc/sys/net/ipv4/ip_forward
 exit 0
 EOF
+
+service ipsec start && service xl2tpd start
+chkconfig ipsec on && chkconfig xl2tpd on
+
+/opt/aws/bin/cfn-signal --stack $STACK_NAME --resource EC2Instance --region $REGION
