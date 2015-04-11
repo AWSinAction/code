@@ -14,6 +14,10 @@
 		"Subnet": {
 			"Description": "Just select one of the available subnets",
 			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"IpForSSH": {
+			"Description": "Your public IP to allow SSH access",
+			"Type": "String"
 		}
 	},
 	"Mappings": {
@@ -44,7 +48,7 @@
 				"IpProtocol": "icmp",
 				"FromPort": "-1",
 				"ToPort": "-1",
-				"SourceSecurityGroupId": {"Ref": "SecurityGroup2"}
+				"CidrIp": "0.0.0.0/0"
 			}
 		},
 		"AllowInboundSSH": {
@@ -54,23 +58,43 @@
 				"IpProtocol": "tcp",
 				"FromPort": "22",
 				"ToPort": "22",
-				"CidrIp": "0.0.0.0/0"
+				"CidrIp": {"Fn::Join": ["", [{"Ref": "IpForSSH"}, "/32"]]}
 			}
 		},
-		"SecurityGroup2": {
+		"SecurityGroupPrivate": {
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
 				"GroupDescription": "My security group",
 				"VpcId": {"Ref": "VPC"}
 			}
 		},
-		"Server": {
+		"AllowPrivateInboundSSH": {
+			"Type": "AWS::EC2::SecurityGroupIngress",
+			"Properties": {
+				"GroupId": {"Ref": "SecurityGroupPrivate"},
+				"IpProtocol": "tcp",
+				"FromPort": "22",
+				"ToPort": "22",
+				"SourceSecurityGroupId": {"Ref": "SecurityGroup"}
+			}
+		},
+		"BastionHost": {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
-				"SecurityGroupIds": [{"Ref": "SecurityGroup"}, {"Ref": "SecurityGroup2"}],
+				"SecurityGroupIds": [{"Ref": "SecurityGroup"}],
+				"SubnetId": {"Ref": "Subnet"}
+			}
+		},
+		"Server1": {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
+				"InstanceType": "t2.micro",
+				"KeyName": {"Ref": "KeyName"},
+				"SecurityGroupIds": [{"Ref": "SecurityGroupPrivate"}],
 				"SubnetId": {"Ref": "Subnet"}
 			}
 		},
@@ -80,19 +104,23 @@
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
-				"SecurityGroupIds": [{"Ref": "SecurityGroup"}, {"Ref": "SecurityGroup2"}],
+				"SecurityGroupIds": [{"Ref": "SecurityGroupPrivate"}],
 				"SubnetId": {"Ref": "Subnet"}
 			}
 		}
 	},
 	"Outputs": {
-		"PublicName": {
-			"Value": {"Fn::GetAtt": ["Server", "PublicDnsName"]},
-			"Description": "Public name (connect via SSH as user ec2-user)"
+		"BastionHostPublicName": {
+			"Value": {"Fn::GetAtt": ["BastionHost", "PublicDnsName"]},
+			"Description": "Bastion host public name (connect via SSH as user ec2-user)"
 		},
-		"PublicName2": {
+		"Server1PublicName": {
+			"Value": {"Fn::GetAtt": ["Server1", "PublicDnsName"]},
+			"Description": "Server1 public name"
+		},
+		"Server2PublicName": {
 			"Value": {"Fn::GetAtt": ["Server2", "PublicDnsName"]},
-			"Description": "Public name (connect via SSH as user ec2-user)"
+			"Description": "Server2 public name"
 		}
 	}
 }
