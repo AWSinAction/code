@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash -ex
 
 #param IPSEC_PSK the shared secret
 #param VPN_USER the vpn username
@@ -6,8 +6,8 @@
 #param STACK_NAME
 #param REGION
  
-PRIVATE_IP=`wget -q -O - 'http://169.254.169.254/latest/meta-data/local-ipv4'`
-PUBLIC_IP=`wget -q -O - 'http://169.254.169.254/latest/meta-data/public-ipv4'`
+PRIVATE_IP=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
+PUBLIC_IP=`curl http://169.254.169.254/latest/meta-data/public-ipv4`
 
 yum-config-manager --enable epel && yum clean all
 
