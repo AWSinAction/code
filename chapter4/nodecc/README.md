@@ -2,10 +2,10 @@
 
 ![Node Control Center for AWS](./nodecc.png?raw=true "Node Control Center for AWS")
 
-To install the dependencies run
+Install the dependencies ...
 
 	npm install
 
-To nodecc run
+... and run nodecc
 
 	node index.js
