@@ -1,4 +1,6 @@
-# Amazon Web Services in Action Code
+# Amazon Web Services in Action
+
+![Cover of Amazon Web Services in Action](http://manning.com/wittig/wittig_cover150.jpg)
 
 Code of Amazon Web Services in Action http://manning.com/wittig/
 
