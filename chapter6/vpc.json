@@ -648,8 +648,13 @@
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
-				"SubnetId": {"Ref": "SubnetPrivateApache"},
-				"SecurityGroupIds": [{"Ref": "SecurityGroup"}],
+				"NetworkInterfaces": [{
+					"AssociatePublicIpAddress": "false",
+					"DeleteOnTermination": "true",
+					"SubnetId": {"Ref": "SubnetPrivateApache"},
+					"DeviceIndex": "0",
+					"GroupSet": [{"Ref": "SecurityGroup"}]
+				}],
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
 					"#!/bin/bash -ex\n",
 					"yum -y install httpd24-2.4.12\n",
