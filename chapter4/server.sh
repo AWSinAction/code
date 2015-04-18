@@ -1,5 +1,5 @@
 #!/bin/bash -e
-AMIID=$(aws ec2 describe-images --filters "Name=description, Values=Amazon Linux AMI 2014.09.2 x86_64 HVM EBS" --query "Images[0].ImageId" --output text)
+AMIID=$(aws ec2 describe-images --filters "Name=description, Values=Amazon Linux AMI 2015.03.? x86_64 HVM GP2" --query "Images[0].ImageId" --output text)
 VPCID=$(aws ec2 describe-vpcs --filter "Name=isDefault, Values=true" --query "Vpcs[0].VpcId" --output text)
 SUBNETID=$(aws ec2 describe-subnets --filters "Name=vpc-id, Values=$VPCID" --query "Subnets[0].SubnetId" --output text)
 SGID=$(aws ec2 create-security-group --group-name mysecuritygroup --description "My security group" --vpc-id $VPCID --output text)
