@@ -28,6 +28,19 @@
 			"Type": "String"
 		}
 	},
+	"Mappings": {
+		"EC2RegionMap": {
+			"ap-northeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-cbf90ecb", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-03cf3903"},
+			"ap-southeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-68d8e93a", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-b49dace6"},
+			"ap-southeast-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-fd9cecc7", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-e7ee9edd"},
+			"eu-central-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-a8221fb5", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-46073a5b"},
+			"eu-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-a10897d6", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-6975eb1e"},
+			"sa-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-b52890a8", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-fbfa41e6"},
+			"us-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-1ecae776", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-303b1458"},
+			"us-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-d114f295", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-7da94839"},
+			"us-west-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-e7527ed7", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-69ae8259"}
+		}
+	},
 	"Resources": {
 		"EC2Instance": {
 			"Type": "AWS::EC2::Instance",
@@ -35,7 +48,7 @@
 				"InstanceType": "t2.micro",
 				"SecurityGroupIds": [ { "Ref" : "InstanceSecurityGroup" } ],
 				"KeyName": { "Ref" : "KeyName" },
-				"ImageId": "ami-1ecae776",
+				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxNATAMIHVMEBSBacked64bit"]},
 				"SubnetId": {"Ref": "Subnet"},
 				"UserData": { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash\n",
