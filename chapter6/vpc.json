@@ -148,7 +148,7 @@
 				"RuleNumber": "200",
 				"Protocol": "6",
 				"PortRange": {
-					"From": "49152",
+					"From": "1024",
 					"To": "65535"
 				},
 				"RuleAction": "allow",
@@ -193,7 +193,7 @@
 				"RuleNumber": "200",
 				"Protocol": "6",
 				"PortRange": {
-					"From": "49152",
+					"From": "1024",
 					"To": "65535"
 				},
 				"RuleAction": "allow",
@@ -266,7 +266,7 @@
 				"RuleNumber": "200",
 				"Protocol": "6",
 				"PortRange": {
-					"From": "49152",
+					"From": "1024",
 					"To": "65535"
 				},
 				"RuleAction": "allow",
@@ -296,7 +296,7 @@
 				"RuleNumber": "200",
 				"Protocol": "6",
 				"PortRange": {
-					"From": "49152",
+					"From": "1024",
 					"To": "65535"
 				},
 				"RuleAction": "allow",
@@ -384,7 +384,7 @@
 				"RuleNumber": "200",
 				"Protocol": "6",
 				"PortRange": {
-					"From": "49152",
+					"From": "1024",
 					"To": "65535"
 				},
 				"RuleAction": "allow",
@@ -429,7 +429,7 @@
 				"RuleNumber": "200",
 				"Protocol": "6",
 				"PortRange": {
-					"From": "49152",
+					"From": "1024",
 					"To": "65535"
 				},
 				"RuleAction": "allow",
@@ -516,7 +516,7 @@
 				"RuleNumber": "200",
 				"Protocol": "6",
 				"PortRange": {
-					"From": "49152",
+					"From": "1024",
 					"To": "65535"
 				},
 				"RuleAction": "allow",
@@ -561,7 +561,7 @@
 				"RuleNumber": "200",
 				"Protocol": "6",
 				"PortRange": {
-					"From": "49152",
+					"From": "1024",
 					"To": "65535"
 				},
 				"RuleAction": "allow",
@@ -575,9 +575,23 @@
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxNATAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
-				"SubnetId": {"Ref": "SubnetPublicNAT"},
-				"SecurityGroupIds": [{"Ref": "SecurityGroup"}],
-				"SourceDestCheck": "false"
+				"NetworkInterfaces": [{
+					"AssociatePublicIpAddress": "true",
+					"DeleteOnTermination": "true",
+					"SubnetId": {"Ref": "SubnetPublicNAT"},
+					"DeviceIndex": "0",
+					"GroupSet": [{"Ref": "SecurityGroup"}]
+				}],
+				"SourceDestCheck": "false",
+				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
+					"#!/bin/bash -ex\n",
+					"/opt/aws/bin/cfn-signal --stack ", {"Ref": "AWS::StackName"}, " --resource NatServer --region ", {"Ref": "AWS::Region"}, "\n"
+				]]}}
+			},
+			"CreationPolicy": {
+				"ResourceSignal": {
+					"Timeout": "PT5M"
+				}
 			}
 		},
 		"BastionHost": {
@@ -618,8 +632,14 @@
 					"}\n",
 					"EOF\n",
 					"sed -i.bak \"s/^VARNISH_LISTEN_PORT=.*/VARNISH_LISTEN_PORT=80/\" /etc/sysconfig/varnish\n",
-					"service varnish start\n"
+					"service varnish start\n",
+					"/opt/aws/bin/cfn-signal --stack ", {"Ref": "AWS::StackName"}, " --resource VarnishServer --region ", {"Ref": "AWS::Region"}, "\n"
 				]]}}
+			},
+			"CreationPolicy": {
+				"ResourceSignal": {
+					"Timeout": "PT5M"
+				}
 			}
 		},
 		"ApacheServer": {
@@ -633,8 +653,14 @@
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
 					"#!/bin/bash -ex\n",
 					"yum -y install httpd24-2.4.12\n",
-					"service httpd start\n"
+					"service httpd start\n",
+					"/opt/aws/bin/cfn-signal --stack ", {"Ref": "AWS::StackName"}, " --resource ApacheServer --region ", {"Ref": "AWS::Region"}, "\n"
 				]]}}
+			},
+			"CreationPolicy": {
+				"ResourceSignal": {
+					"Timeout": "PT5M"
+				}
 			},
 			"DependsOn": "NatServer"
 		}
