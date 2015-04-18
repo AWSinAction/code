@@ -141,7 +141,7 @@
 				"CidrBlock": "10.0.0.0/16"
 			}
 		},
-		"NetworkAclEntryInPublicNATHighPorts": {
+		"NetworkAclEntryInPublicNATEphemeralPorts": {
 			"Type": "AWS::EC2::NetworkAclEntry",
 			"Properties": {
 				"NetworkAclId": {"Ref": "NetworkAclPublicNAT"},
@@ -186,7 +186,7 @@
 				"CidrBlock": "0.0.0.0/0"
 			}
 		},
-		"NetworkAclEntryOutPublicNATHighPorts": {
+		"NetworkAclEntryOutPublicNATEphemeralPorts": {
 			"Type": "AWS::EC2::NetworkAclEntry",
 			"Properties": {
 				"NetworkAclId": {"Ref": "NetworkAclPublicNAT"},
@@ -259,7 +259,7 @@
 				"CidrBlock": "0.0.0.0/0"
 			}
 		},
-		"NetworkAclEntryInPublicSSHBastionHighPorts": {
+		"NetworkAclEntryInPublicSSHBastionEphemeralPorts": {
 			"Type": "AWS::EC2::NetworkAclEntry",
 			"Properties": {
 				"NetworkAclId": {"Ref": "NetworkAclPublicSSHBastion"},
@@ -289,7 +289,7 @@
 				"CidrBlock": "10.0.0.0/16"
 			}
 		},
-		"NetworkAclEntryOutPublicSSHBastionHighPorts": {
+		"NetworkAclEntryOutPublicSSHBastionEphemeralPorts": {
 			"Type": "AWS::EC2::NetworkAclEntry",
 			"Properties": {
 				"NetworkAclId": {"Ref": "NetworkAclPublicSSHBastion"},
@@ -377,7 +377,7 @@
 				"CidrBlock": "0.0.0.0/0"
 			}
 		},
-		"NetworkAclEntryInPublicVarnishHighPorts": {
+		"NetworkAclEntryInPublicVarnishEphemeralPorts": {
 			"Type": "AWS::EC2::NetworkAclEntry",
 			"Properties": {
 				"NetworkAclId": {"Ref": "NetworkAclPublicVarnish"},
@@ -422,7 +422,7 @@
 				"CidrBlock": "0.0.0.0/0"
 			}
 		},
-		"NetworkAclEntryOutPublicVarnishHighPorts": {
+		"NetworkAclEntryOutPublicVarnishEphemeralPorts": {
 			"Type": "AWS::EC2::NetworkAclEntry",
 			"Properties": {
 				"NetworkAclId": {"Ref": "NetworkAclPublicVarnish"},
@@ -509,7 +509,7 @@
 				"CidrBlock": "10.0.2.0/24"
 			}
 		},
-		"NetworkAclEntryInPrivateApacheHighPorts": {
+		"NetworkAclEntryInPrivateApacheEphemeralPorts": {
 			"Type": "AWS::EC2::NetworkAclEntry",
 			"Properties": {
 				"NetworkAclId": {"Ref": "NetworkAclPrivateApache"},
@@ -554,7 +554,7 @@
 				"CidrBlock": "0.0.0.0/0"
 			}
 		},
-		"NetworkAclEntryOutPrivateApacheHighPorts": {
+		"NetworkAclEntryOutPrivateApacheEphemeralPorts": {
 			"Type": "AWS::EC2::NetworkAclEntry",
 			"Properties": {
 				"NetworkAclId": {"Ref": "NetworkAclPrivateApache"},
