@@ -22,15 +22,15 @@
 	},
 	"Mappings": {
 		"EC2RegionMap": {
-			"ap-northeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-18869819"},
-			"ap-southeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-96bb90c4"},
-			"ap-southeast-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-d50773ef"},
-			"eu-central-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-04003319"},
-			"eu-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-9d23aeea"},
-			"sa-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-af9925b2"},
-			"us-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-146e2a7c"},
-			"us-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-42908907"},
-			"us-west-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-dfc39aef"}
+			"ap-northeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-c7f90ec7"},
+			"ap-southeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-64d8e936"},
+			"ap-southeast-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-f39cecc9"},
+			"eu-central-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-ae221fb3"},
+			"eu-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-a30897d4"},
+			"sa-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-b72890aa"},
+			"us-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-10cae778"},
+			"us-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-cb14f28f"},
+			"us-west-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-e9527ed9"}
 		}
 	},
 	"Resources": {
