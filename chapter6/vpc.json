@@ -95,7 +95,8 @@
 				"RouteTableId": {"Ref": "RouteTablePublicNAT"},
 				"DestinationCidrBlock": "0.0.0.0/0",
 				"GatewayId": {"Ref": "InternetGateway"}
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"NetworkAclPublicNAT": {
 			"Type": "AWS::EC2::NetworkAcl",
@@ -119,6 +120,21 @@
 				"PortRange": {
 					"From": "80",
 					"To": "80"
+				},
+				"RuleAction": "allow",
+				"Egress": "false",
+				"CidrBlock": "10.0.0.0/16"
+			}
+		},
+		"NetworkAclEntryInPublicNATHTTPS": {
+			"Type": "AWS::EC2::NetworkAclEntry",
+			"Properties": {
+				"NetworkAclId": {"Ref": "NetworkAclPublicNAT"},
+				"RuleNumber": "110",
+				"Protocol": "6",
+				"PortRange": {
+					"From": "443",
+					"To": "443"
 				},
 				"RuleAction": "allow",
 				"Egress": "false",
@@ -149,6 +165,21 @@
 				"PortRange": {
 					"From": "80",
 					"To": "80"
+				},
+				"RuleAction": "allow",
+				"Egress": "true",
+				"CidrBlock": "0.0.0.0/0"
+			}
+		},
+		"NetworkAclEntryOutPublicNATHTTPS": {
+			"Type": "AWS::EC2::NetworkAclEntry",
+			"Properties": {
+				"NetworkAclId": {"Ref": "NetworkAclPublicNAT"},
+				"RuleNumber": "110",
+				"Protocol": "6",
+				"PortRange": {
+					"From": "443",
+					"To": "443"
 				},
 				"RuleAction": "allow",
 				"Egress": "true",
@@ -197,7 +228,8 @@
 				"RouteTableId": {"Ref": "RouteTablePublicSSHBastion"},
 				"DestinationCidrBlock": "0.0.0.0/0",
 				"GatewayId": {"Ref": "InternetGateway"}
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"NetworkAclPublicSSHBastion": {
 			"Type": "AWS::EC2::NetworkAcl",
@@ -299,7 +331,8 @@
 				"RouteTableId": {"Ref": "RouteTablePublicVarnish"},
 				"DestinationCidrBlock": "0.0.0.0/0",
 				"GatewayId": {"Ref": "InternetGateway"}
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"NetworkAclPublicVarnish": {
 			"Type": "AWS::EC2::NetworkAcl",
@@ -368,6 +401,21 @@
 				"PortRange": {
 					"From": "80",
 					"To": "80"
+				},
+				"RuleAction": "allow",
+				"Egress": "true",
+				"CidrBlock": "0.0.0.0/0"
+			}
+		},
+		"NetworkAclEntryOutPublicVarnishHTTPS": {
+			"Type": "AWS::EC2::NetworkAclEntry",
+			"Properties": {
+				"NetworkAclId": {"Ref": "NetworkAclPublicVarnish"},
+				"RuleNumber": "110",
+				"Protocol": "6",
+				"PortRange": {
+					"From": "443",
+					"To": "443"
 				},
 				"RuleAction": "allow",
 				"Egress": "true",
@@ -491,6 +539,21 @@
 				"CidrBlock": "0.0.0.0/0"
 			}
 		},
+		"NetworkAclEntryOutPrivateApacheHTTPS": {
+			"Type": "AWS::EC2::NetworkAclEntry",
+			"Properties": {
+				"NetworkAclId": {"Ref": "NetworkAclPrivateApache"},
+				"RuleNumber": "110",
+				"Protocol": "6",
+				"PortRange": {
+					"From": "443",
+					"To": "443"
+				},
+				"RuleAction": "allow",
+				"Egress": "true",
+				"CidrBlock": "0.0.0.0/0"
+			}
+		},
 		"NetworkAclEntryOutPrivateApacheHighPorts": {
 			"Type": "AWS::EC2::NetworkAclEntry",
 			"Properties": {
@@ -512,14 +575,9 @@
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxNATAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
-				"SourceDestCheck": "false",
-				"NetworkInterfaces": [{
-					"AssociatePublicIpAddress": "true",
-					"DeleteOnTermination": "true",
-					"SubnetId": {"Ref": "SubnetPublicNAT"},
-					"DeviceIndex": "0",
-					"GroupSet": [{"Ref": "SecurityGroup"}]
-				}]
+				"SubnetId": {"Ref": "SubnetPublicNAT"},
+				"SecurityGroupIds": [{"Ref": "SecurityGroup"}],
+				"SourceDestCheck": "false"
 			}
 		},
 		"BastionHost": {
@@ -574,10 +632,11 @@
 				"SecurityGroupIds": [{"Ref": "SecurityGroup"}],
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
 					"#!/bin/bash -ex\n",
-					"yum -y install httpd-2.2.29\n",
+					"yum -y install httpd24-2.4.12\n",
 					"service httpd start\n"
 				]]}}
-			}
+			},
+			"DependsOn": "NatServer"
 		}
 	},
 	"Outputs": {
