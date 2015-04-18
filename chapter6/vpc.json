@@ -10,15 +10,15 @@
 	},
 	"Mappings": {
 		"EC2RegionMap": {
-			"ap-northeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-c7f90ec7", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-11dc2a11"},
-			"ap-southeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-64d8e936", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-1a9dac48"},
-			"ap-southeast-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-f39cecc9", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-43ee9e79"},
-			"eu-central-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-ae221fb3", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-1e073a03"},
-			"eu-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-a30897d4", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-ef76e898"},
-			"sa-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-b72890aa", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-63fa417e"},
-			"us-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-10cae778", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-b0210ed8"},
-			"us-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-cb14f28f", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-ada746e9"},
-			"us-west-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-e9527ed9", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-75ae8245"}
+			"ap-northeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-cbf90ecb", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-03cf3903"},
+			"ap-southeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-68d8e93a", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-b49dace6"},
+			"ap-southeast-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-fd9cecc7", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-e7ee9edd"},
+			"eu-central-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-a8221fb5", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-46073a5b"},
+			"eu-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-a10897d6", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-6975eb1e"},
+			"sa-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-b52890a8", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-fbfa41e6"},
+			"us-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-1ecae776", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-303b1458"},
+			"us-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-d114f295", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-7da94839"},
+			"us-west-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-e7527ed7", "AmazonLinuxNATAMIHVMEBSBacked64bit": "ami-69ae8259"}
 		}
 	},
 	"Resources": {
