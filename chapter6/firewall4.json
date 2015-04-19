@@ -16,7 +16,7 @@
 			"Type": "AWS::EC2::Subnet::Id"
 		},
 		"IpForSSH": {
-			"Description": "Your public IP to allow SSH access",
+			"Description": "Your public IP address to allow SSH access",
 			"Type": "String"
 		}
 	},
