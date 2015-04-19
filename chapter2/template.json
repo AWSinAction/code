@@ -56,8 +56,8 @@
 				}, {
 					"FromPort": 80,
 					"IpProtocol": "tcp",
-					"SourceSecurityGroupOwnerId": {"Fn::GetAtt" : ["LoadBalancer", "SourceSecurityGroup.OwnerAlias"]},
-					"SourceSecurityGroupName": {"Fn::GetAtt" : ["LoadBalancer", "SourceSecurityGroup.GroupName"]},
+					"SourceSecurityGroupOwnerId": {"Fn::GetAtt": ["LoadBalancer", "SourceSecurityGroup.OwnerAlias"]},
+					"SourceSecurityGroupName": {"Fn::GetAtt": ["LoadBalancer", "SourceSecurityGroup.GroupName"]},
 					"ToPort": 80
 				}]
 			}
@@ -91,7 +91,7 @@
 			"Type": "AWS::AutoScaling::LaunchConfiguration",
 			"Metadata": {
 				"AWS::CloudFormation::Init": {
-					"config" : {
+					"config": {
 						"packages": {
 							"yum": {
 								"php": [],
@@ -111,7 +111,7 @@
 									"sed -i \"s/'database_name_here'/'wordpress'/g\" wp-config.php\n",
 									"sed -i \"s/'username_here'/'wordpress'/g\" wp-config.php\n",
 									"sed -i \"s/'password_here'/'wordpress'/g\" wp-config.php\n",
-									"sed -i \"s/'localhost'/'",{ "Fn::GetAtt" : [ "Database", "Endpoint.Address" ] }, "'/g\" wp-config.php\n"
+									"sed -i \"s/'localhost'/'", {"Fn::GetAtt": ["Database", "Endpoint.Address"]}, "'/g\" wp-config.php\n"
 								]]},
 								"mode": "000500",
 								"owner": "root",
@@ -119,7 +119,7 @@
 							}
 						},
 						"commands": {
-							"01_config" : {
+							"01_config": {
 								"command": "/tmp/config",
 								"cwd": "/var/www/html/wordpress"
 							}
@@ -141,11 +141,11 @@
 				"InstanceType": "t2.micro",
 				"SecurityGroups": [{"Ref": "WebServerSecurityGroup"}],
 				"KeyName": {"Ref": "KeyName"},
-				"UserData" : {"Fn::Base64": {"Fn::Join": ["", [
+				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
 					"#!/bin/bash -xe\n",
 					"yum update -y aws-cfn-bootstrap\n",
-					"/opt/aws/bin/cfn-init -v --stack ", {"Ref": "AWS::StackName"}, " --resource LaunchConfiguration --region ", {"Ref" : "AWS::Region"}, "\n",
-					"/opt/aws/bin/cfn-signal -e $? --stack ", {"Ref": "AWS::StackName"}, " --resource AutoScalingGroup --region ", {"Ref" : "AWS::Region"}, "\n"
+					"/opt/aws/bin/cfn-init -v --stack ", {"Ref": "AWS::StackName"}, " --resource LaunchConfiguration --region ", {"Ref": "AWS::Region"}, "\n",
+					"/opt/aws/bin/cfn-signal -e $? --stack ", {"Ref": "AWS::StackName"}, " --resource AutoScalingGroup --region ", {"Ref": "AWS::Region"}, "\n"
 				]]}}
 			}
 		},

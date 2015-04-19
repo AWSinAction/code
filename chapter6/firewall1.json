@@ -38,8 +38,8 @@
 			}
 		},
 		"Server": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
