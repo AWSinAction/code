@@ -10,8 +10,7 @@ PRIVATE_IP=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
 PUBLIC_IP=`curl http://169.254.169.254/latest/meta-data/public-ipv4`
 
 yum-config-manager --enable epel && yum clean all
-
-/opt/aws/bin/cfn-init -v --stack $STACK_NAME --resource EC2Instance --region $REGION
+yum install -y openswan xl2tpd
 
 cat > /etc/ipsec.conf <<EOF
 version 2.0
@@ -67,6 +66,21 @@ EOF
 
 cat > /etc/ppp/chap-secrets <<EOF
 ${VPN_USER} l2tpd ${VPN_PASSWORD} *
+EOF
+
+cat > /etc/ppp/options.xl2tpd <<EOF
+ipcp-accept-local
+ipcp-accept-remote
+ms-dns 8.8.8.8
+ms-dns 8.8.4.4
+noccp
+auth
+crtscts
+idle 1800
+mtu 1280
+mru 1280
+lock
+connect-delay 5000
 EOF
  
 iptables -t nat -A POSTROUTING -s 192.168.42.0/24 -o eth0 -j MASQUERADE
