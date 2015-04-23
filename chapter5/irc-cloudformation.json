@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Starts an virtual server (EC2) with OpenSwan acting as VPN IPSec endpoint.",
+	"Description": "Creates a custom firewall for IRC server.",
 	"Parameters": {
 		"VPC": {
 			"Description": "Just select the one and only default VPC.",
