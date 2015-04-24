@@ -3,7 +3,8 @@
 		"aws-sdk": "2.1.23",
 		"mu2": "0.5.20",
 		"uuid": "2.0.1",
-		"multiparty": "4.1.1"
+		"multiparty": "4.1.1",
+		"express": "4.12.3"
 	},
 	"private": true
 }

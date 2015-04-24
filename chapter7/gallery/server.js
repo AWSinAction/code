@@ -1,9 +1,10 @@
-var http = require("http");
+var express = require("express");
 var AWS = require("aws-sdk");
 var mu = require("mu2");
 var uuid = require("uuid");
 var multiparty = require("multiparty");
 
+var app = express();
 var s3 = new AWS.S3({
 	"region": "us-east-1"
 });
@@ -21,8 +22,8 @@ function listImages(response) {
 	s3.listObjects(params, function(err, data) {
 		if (err) {
 			console.error(err);
-			response.writeHead(500);
-			response.end("Internal server error.");
+			response.status(500);
+			response.send("Internal server error.");
 		} else {
 			var stream = mu.compileAndRender(
 				"index.html", 
@@ -36,41 +37,42 @@ function listImages(response) {
 	});
 }
 
-function uploadImage(part, response) {
+function uploadImage(image, response) {
 	var params = {
-		Body: part,
+		Body: image,
 		Bucket: bucket,
 		Key: uuid.v4(),
 		ACL: "public-read",
-		ContentLength: part.byteCount
+		ContentLength: image.byteCount
 	};
 	s3.putObject(params, function(err, data) {
 		if (err) {
 			console.error(err);
-			response.writeHead(500);
-			response.end("Internal server error.");
+			response.status(500);
+			response.send("Internal server error.");
 		} else {
-			response.writeHead(302, {"Location": "/"});
-			response.end();
+			response.redirect("/");
 		}
 	});
 }
+ 
+app.get('/', function (request, response) {
+  listImages(response);
+});
 
-function onRequest(request, response) {
-	if (request.method === "GET") {			
-		listImages(response);
-	} else if (request.method === "POST") {
-		var form = new multiparty.Form();
-		form.on("part", function(part) {
-			uploadImage(part, response);
-		});
-		form.parse(request);
-	} else {
-		response.writeHead(405);
-		response.end("Method not allowed.");
-	}
-}
+app.post('/upload', function (request, response) {
+	var form = new multiparty.Form();
+	form.on("part", function(part) {
+		uploadImage(part, response);
+	});
+	form.parse(request);
+})
+ 
+app.listen(8080);
 
-http.createServer(onRequest).listen(8080);
 console.log("Server started. " +
 	"Open http://localhost:8080 with browser.")
+
+
+
+
