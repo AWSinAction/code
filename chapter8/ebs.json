@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "AWS in Action: chapter 8 (Instance Store)",
+	"Description": "AWS in Action: chapter 8 (EBS)",
 	"Parameters": {
 		"KeyName": {
 			"Description": "Key Pair name",
@@ -14,6 +14,12 @@
 		"Subnet": {
 			"Description": "Just select one of the available subnets",
 			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"AttachVolume": {
+			"Description": "Should the volume be attached?",
+			"Type": "String",
+			"Default": "yes",
+			"AllowedValues": ["yes", "no"]
 		}
 	},
 	"Mappings": {
@@ -28,6 +34,9 @@
 			"us-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-d114f295"},
 			"us-west-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-e7527ed7"}
 		}
+	},
+	"Conditions": {
+		"Attached": {"Fn::Equals": [{"Ref": "AttachVolume"}, "yes"]}
 	},
 	"Resources": {
 		"SecurityGroup": {
@@ -54,7 +63,7 @@
 			}
 		},
 		"Volume": {
-			"Type":"AWS::EC2::Volume",
+			"Type": "AWS::EC2::Volume",
 			"Properties": {
 				"AvailabilityZone": {"Fn::GetAtt": ["Server", "AvailabilityZone"]},
 				"Size": "5",
@@ -63,6 +72,7 @@
 		},
 		"VolumeAttachment": {
 			"Type": "AWS::EC2::VolumeAttachment",
+			"Condition": "Attached",
 			"Properties": {
 				"Device": "/dev/sdf",
 				"InstanceId": {"Ref": "Server"},
