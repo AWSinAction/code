@@ -84,6 +84,10 @@
 		"PublicName": {
 			"Value": {"Fn::GetAtt": ["Server", "PublicDnsName"]},
 			"Description": "Public name (connect via SSH as user ec2-user)"
+		},
+		"VolumeId": {
+			"Value": {"Ref": "Volume"},
+			"Description": "Volume id"
 		}
 	}
 }
