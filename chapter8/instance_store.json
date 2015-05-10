@@ -58,7 +58,7 @@
 						"VolumeType": "gp2"
 					}
 				}, {
-					"DeviceName": "/dev/sdb",
+					"DeviceName": "/dev/xvdb",
 					"VirtualName": "ephemeral0"
 				}]
 			}

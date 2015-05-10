@@ -74,7 +74,7 @@
 			"Type": "AWS::EC2::VolumeAttachment",
 			"Condition": "Attached",
 			"Properties": {
-				"Device": "/dev/sdf",
+				"Device": "/dev/xvdf",
 				"InstanceId": {"Ref": "Server"},
 				"VolumeId": {"Ref": "Volume"}
 			}
