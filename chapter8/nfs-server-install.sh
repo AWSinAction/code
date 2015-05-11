@@ -8,6 +8,9 @@ echo "/media/ephemeral0 *(rw,async)" >> /etc/exports
 exportfs -a
 
 # mount EBS backup volume
+INSTANCEID=`curl -s http://169.254.169.254/latest/meta-data/instance-id`
+aws --region $REGION ec2 attach-volume --volume-id $VOLUMEID --instance-id $INSTANCEID --device "/dev/xvdf"
+while ! [ "$(fdisk -l | grep '/dev/xvdf' | wc -l)" -ge "1" ]; do sleep 10; done
 mkdir /mnt/backup
 echo "/dev/xvdf /mnt/backup ext4 defaults,nofail 0 2" >> /etc/fstab
 mount -a
