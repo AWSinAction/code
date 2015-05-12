@@ -12,6 +12,7 @@ while ! [ "$(fdisk -l | grep '/dev/xvdf' | wc -l)" -ge "1" ]; do sleep 10; done
 
 # format EBS volume if needed
 if [[ "$(file -s /dev/xvdf)" != *"ext4"* ]]
+then
 	mkfs -t ext4 /dev/xvdf
 fi
 
