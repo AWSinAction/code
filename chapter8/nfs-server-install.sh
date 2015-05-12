@@ -4,6 +4,7 @@
 yum -y install nfs-utils nfs-utils-lib
 service rpcbind start
 service nfs start
+chmod 777 /media/ephemeral0
 echo "/media/ephemeral0 *(rw,async)" >> /etc/exports
 exportfs -a
 
