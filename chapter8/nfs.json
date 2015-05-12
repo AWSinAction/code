@@ -182,10 +182,16 @@
 					"yum -y install nfs-utils nfs-utils-lib\n",
 					"mkdir /mnt/nfs\n",
 					"echo \"", {"Fn::GetAtt": ["Server", "PublicDnsName"]}, ":/media/ephemeral0 /mnt/nfs nfs rw 0 0\" >> /etc/fstab\n",
-					"mount -a\n"
+					"mount -a\n",
+					"/opt/aws/bin/cfn-signal -e $? --stack ", {"Ref": "AWS::StackName"}, " --resource Client1 --region ", {"Ref": "AWS::Region"}, "\n"
 				]]}}
 			},
-			"DependsOn": "WaitCondition"
+			"DependsOn": "WaitCondition",
+			"CreationPolicy": {
+				"ResourceSignal": {
+					"Timeout": "PT10M"
+				}
+			}
 		},
 		"Client2": {
 			"Type": "AWS::EC2::Instance",
@@ -200,10 +206,16 @@
 					"yum -y install nfs-utils nfs-utils-lib\n",
 					"mkdir /mnt/nfs\n",
 					"echo \"", {"Fn::GetAtt": ["Server", "PublicDnsName"]}, ":/media/ephemeral0 /mnt/nfs nfs rw 0 0\" >> /etc/fstab\n",
-					"mount -a\n"
+					"mount -a\n",
+					"/opt/aws/bin/cfn-signal -e $? --stack ", {"Ref": "AWS::StackName"}, " --resource Client2 --region ", {"Ref": "AWS::Region"}, "\n"
 				]]}}
 			},
-			"DependsOn": "WaitCondition"
+			"DependsOn": "WaitCondition",
+			"CreationPolicy": {
+				"ResourceSignal": {
+					"Timeout": "PT10M"
+				}
+			}
 		}
 	},
 	"Outputs": {
