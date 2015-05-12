@@ -1,20 +1,27 @@
 #!/bin/bash -ex
 
+# install and configure NFS
 yum -y install nfs-utils nfs-utils-lib
 service rpcbind start
 service nfs start
-
 echo "/media/ephemeral0 *(rw,async)" >> /etc/exports
 exportfs -a
 
-# mount EBS backup volume
+# wait until EBS volume is attached
 while ! [ "$(fdisk -l | grep '/dev/xvdf' | wc -l)" -ge "1" ]; do sleep 10; done
+
+# format EBS volume if needed
+if [[ "$(file -s /dev/xvdf)" != *"ext4"* ]]
+	mkfs -t ext4 /dev/xvdf
+fi
+
+# mount EBS volume
 mkdir /mnt/backup
 echo "/dev/xvdf /mnt/backup ext4 defaults,nofail 0 2" >> /etc/fstab
 mount -a
 
 INSTANCEID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-VOLUMEID=$(aws --region $REGION ec2 describe-volumes --filters = "Key=attachment.instance-id,Values=$INSTANCEID" --query "Volumes[0].VolumeId" --output text)
+VOLUMEID=$(aws --region $REGION ec2 describe-volumes --filters "Name=attachment.instance-id,Values=$INSTANCEID" --query "Volumes[0].VolumeId" --output text)
 
 # backup cron
 cat > /etc/cron.d/backup << EOF
