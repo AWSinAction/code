@@ -65,7 +65,7 @@
 				}]
 			}
 		},
-		"SecurityGroup": {
+		"SecurityGroupCommon": {
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
 				"GroupDescription": "My security group",
@@ -120,7 +120,7 @@
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "m3.medium",
 				"KeyName": {"Ref": "KeyName"},
-				"SecurityGroupIds": [{"Ref": "SecurityGroup"}, {"Ref": "SecurityGroupServer"}],
+				"SecurityGroupIds": [{"Ref": "SecurityGroupCommon"}, {"Ref": "SecurityGroupServer"}],
 				"SubnetId": {"Ref": "Subnet"},
 				"BlockDeviceMappings": [{
 					"DeviceName": "/dev/xvda",
@@ -175,7 +175,7 @@
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
-				"SecurityGroupIds": [{"Ref": "SecurityGroup"}, {"Ref": "SecurityGroupClient"}],
+				"SecurityGroupIds": [{"Ref": "SecurityGroupCommon"}, {"Ref": "SecurityGroupClient"}],
 				"SubnetId": {"Ref": "Subnet"},
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
 					"#!/bin/bash -ex\n",
@@ -193,7 +193,7 @@
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
-				"SecurityGroupIds": [{"Ref": "SecurityGroup"}, {"Ref": "SecurityGroupClient"}],
+				"SecurityGroupIds": [{"Ref": "SecurityGroupCommon"}, {"Ref": "SecurityGroupClient"}],
 				"SubnetId": {"Ref": "Subnet"},
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
 					"#!/bin/bash -ex\n",
