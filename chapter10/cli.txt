@@ -3,16 +3,17 @@ nodetodo
 Usage:
   nodetodo user-add <uid> <email> <phone>
   nodetodo user-rm <uid>
+  nodetodo user-ls [--limit=<limit>] [--next=<id>]
   nodetodo user <uid>
   nodetodo task-add <uid> <description> [<category>] [--dueat=<yyyymmdd>] 
   nodetodo task-rm <uid> <tid>
-  nodetodo task-ls <uid> [<category>] [--overdue|--due|--withoutdue|--futuredue|--dueafter=<yyyymmdd>|--duebefore=<yyyymmdd>] [--limit=<limit>] [--next=<tid>]
+  nodetodo task-ls <uid> [<category>] [--overdue|--due|--withoutdue|--futuredue|--dueafter=<yyyymmdd>|--duebefore=<yyyymmdd>] [--limit=<limit>] [--next=<id>]
   nodetodo task-done <uid> <tid>
   nodetodo -h | --help
   nodetodo --version
 
 Options:
-  -h --help            Show this screen.
-  --version            Show version.
-  --limit=<limit>      Max. number of results [default: 10].
-  --next=<tid>         Last tid to get the next results [default: 0].
+  -h --help        Show this screen.
+  --version        Show version.
+  --limit=<limit>  Maximum number of results [default: 10].
+  --next=<id>      Last id to get the next results.

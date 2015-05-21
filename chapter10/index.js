@@ -29,6 +29,14 @@ function mapTaskItem(item) {
 	return task;
 }
 
+function mapUserItem(item) {
+	return {
+		"uid": item.uid.S,
+		"email": item.email.S,
+		"phone": item.phone.S
+	};
+}
+
 if (input['user-add'] === true) {
 	var params = {
 		"Item": {
@@ -65,6 +73,28 @@ if (input['user-add'] === true) {
 			console.error('error', err);
 		} else {
 			console.log('user removed with uid ' + input['<uid>']);
+		}
+	});
+} else if (input['user-ls'] === true) {
+	var params = {
+		"TableName": "todo-user",
+		"Limit": input['--limit']
+	};
+	if (input['--next'] !== null) {
+		params.ExclusiveStartKey = {
+			"uid": {
+				"S": input['--next']
+			}
+		};
+	}
+	db.scan(params, function(err, data) {
+		if (err) {
+			console.error('error', err);
+		} else {
+			console.log('users', data.Items.map(mapUserItem));
+			if (data.LastEvaluatedKey !== undefined) {
+				console.log('more users available with --next=' + data.LastEvaluatedKey.uid.S);
+			}
 		}
 	});
 } else if (input['user'] === true) {
@@ -147,18 +177,21 @@ if (input['user-add'] === true) {
 	});
 } else if (input['task-ls'] === true) {
 	var params = {
-		"KeyConditionExpression": "uid = :uid AND tid > :next",
+		"KeyConditionExpression": "uid = :uid",
 		"ExpressionAttributeValues": {
 			":uid": {
 				"S": input['<uid>']
-			},
-			":next": {
-				"N": input['--next']
 			}
 		},
 		"TableName": "todo-task",
 		"Limit": input['--limit']
 	};
+	if (input['--next'] !== null) {
+		params.KeyConditionExpression += ' AND tid > :next';
+		params.ExpressionAttributeValues[':next'] = {
+			"N": input['--next']
+		};
+	}
 	if (input['--overdue'] === true) {
 		params.FilterExpression = "due < :yyyymmdd";
 		params.ExpressionAttributeValues[':yyyymmdd'] = {"N": moment().format("YYYYMMDD")};
@@ -187,6 +220,52 @@ if (input['user-add'] === true) {
 		params.ExpressionAttributeValues[':category'] = {
 			"S": input['<category>']
 		};
+	}
+	db.query(params, function(err, data) {
+		if (err) {
+			console.error('error', err);
+		} else {
+			console.log('tasks', data.Items.map(mapTaskItem));
+			if (data.LastEvaluatedKey !== undefined) {
+				console.log('more tasks available with --next=' + data.LastEvaluatedKey.tid.N);
+			}
+		}
+	});
+} else if (input['task-ls-v2'] === true) {
+	var params = {
+		"KeyConditionExpression": "category = :category",
+		"ExpressionAttributeValues": {
+			":category": {
+				"S": input['<category>']
+			}
+		},
+		"TableName": "todo-task",
+		"IndexName": "category-index",
+		"Limit": input['--limit']
+	};
+	if (input['--next'] !== null) {
+		params.KeyConditionExpression += ' AND tid > :next';
+		params.ExpressionAttributeValues[':next'] = {
+			"N": input['--next']
+		};
+	}
+	if (input['--overdue'] === true) {
+		params.FilterExpression = "due < :yyyymmdd";
+		params.ExpressionAttributeValues[':yyyymmdd'] = {"N": moment().format("YYYYMMDD")};
+	} else if (input['--due'] === true) {
+		params.FilterExpression = "due = :yyyymmdd";
+		params.ExpressionAttributeValues[':yyyymmdd'] = {"N": moment().format("YYYYMMDD")};
+	} else if (input['--withoutdue'] === true) {
+		params.FilterExpression = "attribute_not_exists(due)";
+	} else if (input['--futuredue'] === true) {
+		params.FilterExpression = "due > :yyyymmdd";
+		params.ExpressionAttributeValues[':yyyymmdd'] = {"N": moment().format("YYYYMMDD")};
+	} else if (input['--dueafter'] !== null) {
+		params.FilterExpression = "due > :yyyymmdd";
+		params.ExpressionAttributeValues[':yyyymmdd'] = {"N": input['--dueafter']};
+	} else if (input['--duebefore'] !== null) {
+		params.FilterExpression = "due < :yyyymmdd";
+		params.ExpressionAttributeValues[':yyyymmdd'] = {"N": input['--duebefore']};
 	}
 	db.query(params, function(err, data) {
 		if (err) {
