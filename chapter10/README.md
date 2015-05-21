@@ -54,7 +54,7 @@ Install the dependencies ...
 
 	node index.js task-ls michael
 
-#### complete
+#### mark as done
 
 	node index.js task-done <uid> <tid>
 

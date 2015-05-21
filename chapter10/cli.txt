@@ -16,4 +16,3 @@ Options:
   -h --help        Show this screen.
   --version        Show version.
   --limit=<limit>  Maximum number of results [default: 10].
-  --next=<id>      Last id to get the next results.
