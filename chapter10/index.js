@@ -7,7 +7,7 @@ var db = new AWS.DynamoDB({
 });
 
 var cli = fs.readFileSync('./cli.txt', {"encoding": "utf8"});
-var input = docopt.docopt(cli, {"version": "1.0", argv: process.argv.splice(2)});
+var input = docopt.docopt(cli, {"version": "1.0", "argv": process.argv.splice(2)});
 
 function mapTaskItem(item) {
 	var task = {
