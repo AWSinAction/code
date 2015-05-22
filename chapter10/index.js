@@ -50,7 +50,8 @@ if (input['user-add'] === true) {
 				"S": input['<phone>']
 			}
 		},
-		"TableName": "todo-user"
+		"TableName": "todo-user",
+		"ConditionExpression": "attribute_not_exists(uid)"
 	};
 	db.putItem(params, function(err) {
 		if (err) {
@@ -137,7 +138,8 @@ if (input['user-add'] === true) {
 				"N": moment().format("YYYYMMDD")
 			}
 		},
-		"TableName": "todo-task"
+		"TableName": "todo-task",
+		"ConditionExpression": "attribute_not_exists(uid) and attribute_not_exists(tid)"
 	};
 	if (input['--dueat'] !== null) {
 		params.Item.due = {
