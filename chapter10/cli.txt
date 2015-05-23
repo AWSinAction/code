@@ -8,6 +8,7 @@ Usage:
   nodetodo task-add <uid> <description> [<category>] [--dueat=<yyyymmdd>] 
   nodetodo task-rm <uid> <tid>
   nodetodo task-ls <uid> [<category>] [--overdue|--due|--withoutdue|--futuredue|--dueafter=<yyyymmdd>|--duebefore=<yyyymmdd>] [--limit=<limit>] [--next=<id>]
+  nodetodo task-la <category> [--overdue|--due|--withoutdue|--futuredue|--dueafter=<yyyymmdd>|--duebefore=<yyyymmdd>] [--limit=<limit>] [--next=<id>]
   nodetodo task-done <uid> <tid>
   nodetodo -h | --help
   nodetodo --version

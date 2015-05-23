@@ -9,24 +9,22 @@ var db = new AWS.DynamoDB({
 var cli = fs.readFileSync('./cli.txt', {"encoding": "utf8"});
 var input = docopt.docopt(cli, {"version": "1.0", "argv": process.argv.splice(2)});
 
+function getValue(attribute, type) {
+	if (attribute === undefined) {
+		return null;
+	}
+	return attribute[type];
+}
+
 function mapTaskItem(item) {
-	var task = {
+	return {
 		"tid": item.tid.N,
 		"description": item.description.S,
-		"created": item.created.N
+		"created": item.created.N,
+		"due": getValue(item.due, 'N'),
+		"category": getValue(item.category, 'S'),
+		"completed": getValue(item.completed, 'N')
 	};
-	if (item.due !== undefined) {
-		task.due = item.due.N;
-	}
-	if (item.category !== undefined) {
-		task.category = item.category.S;
-	}
-	if (item.completed !== undefined) {
-		task.completed = item.completed.N;
-	} else {
-		task.completed = false;
-	}
-	return task;
 }
 
 function mapUserItem(item) {
@@ -112,10 +110,7 @@ if (input['user-add'] === true) {
 			console.error('error', err);
 		} else {
 			if (data.Item) {
-				console.log('user with uid ' + input['<uid>'], {
-					"email": data.Item.email.S,
-					"phone": data.Item.phone.S
-				});
+				console.log('user with uid ' + input['<uid>'], mapUserItem(data.Item));
 			} else {
 				console.error('user with uid ' + input['<uid>'] + ' not found');
 			}
@@ -233,7 +228,7 @@ if (input['user-add'] === true) {
 			}
 		}
 	});
-} else if (input['task-ls-v2'] === true) {
+} else if (input['task-la'] === true) {
 	var params = {
 		"KeyConditionExpression": "category = :category",
 		"ExpressionAttributeValues": {
