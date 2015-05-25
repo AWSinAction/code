@@ -206,7 +206,7 @@
 				"MasterUserPassword": "wordpress",
 				"VPCSecurityGroups": [{"Fn::GetAtt": ["DatabaseSecurityGroup", "GroupId"]}],
 				"DBSubnetGroupName": {"Ref": "DBSubnetGroup"},
-				"PreferredMaintenanceWindow": "Sun06:00-Sun07:00",
+				"PreferredMaintenanceWindow": "Sun:06:00-Sun:07:00",
 				"BackupRetentionPeriod": 3,
 				"PreferredBackupWindow": "05:00-06:00"
 			}
