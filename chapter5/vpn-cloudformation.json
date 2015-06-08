@@ -57,7 +57,7 @@
 					"export VPN_PASSWORD=", {"Ref": "VPNPassword"}, "\n",
 					"export STACK_NAME=", {"Ref": "AWS::StackName"}, "\n",
 					"export REGION=", {"Ref": "AWS::Region"}, "\n",
-					"curl https://raw.githubusercontent.com/AWSinAction/code/master/chapter5/vpn-setup.sh | bash\n"
+					"curl -s https://raw.githubusercontent.com/AWSinAction/code/master/chapter5/vpn-setup.sh | bash -ex\n"
 				]]}}
 			}
     	},

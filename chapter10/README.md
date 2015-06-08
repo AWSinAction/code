@@ -1,5 +1,7 @@
 # Node TODO for AWS
 
+![Node TODO for AWS](./nodetodo.png?raw=true "Node TODO for AWS")
+
 Install the dependencies ...
 
 	npm install
@@ -76,13 +78,13 @@ Install the dependencies ...
 * email: string
 * phone: string
 
-### todo
+### task
 
 	aws dynamodb create-table --table-name todo-task --attribute-definitions AttributeName=uid,AttributeType=S AttributeName=tid,AttributeType=N --key-schema AttributeName=uid,KeyType=HASH AttributeName=tid,KeyType=RANGE --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
 
 	aws dynamodb update-table --table-name todo-task --attribute-definitions AttributeName=uid,AttributeType=S AttributeName=tid,AttributeType=N AttributeName=category,AttributeType=S --global-secondary-index-updates '[{"Create": {"IndexName": "category-index", "KeySchema": [{"AttributeName": "category", "KeyType": "HASH"}, {"AttributeName": "tid", "KeyType": "RANGE"}], "Projection": {"ProjectionType": "ALL"}, "ProvisionedThroughput": {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}}}]'
 
-#### key: 
+#### key
 
 * HASH: uid
 * RANGE: tid
