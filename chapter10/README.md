@@ -1,5 +1,7 @@
 # Node TODO for AWS
 
+![Node TODO for AWS](./nodetodo.png?raw=true "Node TODO for AWS")
+
 Install the dependencies ...
 
 	npm install
