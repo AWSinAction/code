@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "AWS in Action: chapter 2 and chapter 9",
+	"Description": "AWS in Action: chapter 12 Load Balancer",
 	"Parameters": {
 		"KeyName": {
 			"Description": "Key Pair name",
@@ -128,17 +128,31 @@
 				"CidrBlock": "0.0.0.0/0"
 			}
 		},
+		"LoadBalancerSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "elb-sg",
+				"VpcId": {"Ref": "VPC"},
+				"SecurityGroupIngress": [{
+					"CidrIp": "0.0.0.0/0",
+					"FromPort": 80,
+					"IpProtocol": "tcp",
+					"ToPort": 80
+				}]
+			}
+		},
 		"LoadBalancer": {
 			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 			"Properties": {
 				"Subnets": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
-				"LoadBalancerName": "awsinaction-elb",
+				"LoadBalancerName": "elb",
 				"Listeners": [{
 					"InstancePort": "80",
 					"InstanceProtocol": "HTTP",
 					"LoadBalancerPort": "80",
 					"Protocol": "HTTP"
 				}],
+				"CrossZone": true,
 				"HealthCheck": {
 					"HealthyThreshold": "2",
 					"Interval": "5",
@@ -148,19 +162,6 @@
 				},
 				"SecurityGroups": [{"Ref": "LoadBalancerSecurityGroup"}],
 				"Scheme": "internet-facing"
-			}
-		},
-		"LoadBalancerSecurityGroup": {
-			"Type": "AWS::EC2::SecurityGroup",
-			"Properties": {
-				"GroupDescription": "awsinaction-elb-sg",
-				"VpcId": {"Ref": "VPC"},
-				"SecurityGroupIngress": [{
-					"CidrIp": "0.0.0.0/0",
-					"FromPort": 80,
-					"IpProtocol": "tcp",
-					"ToPort": 80
-				}]
 			}
 		},
 		"WebServerSecurityGroup": {
@@ -181,43 +182,6 @@
 				}]
 			}
 		},
-		"DatabaseSecurityGroup": {
-			"Type": "AWS::EC2::SecurityGroup",
-			"Properties": {
-				"GroupDescription": "awsinaction-db-sg",
-				"VpcId": {"Ref": "VPC"},
-				"SecurityGroupIngress": [{
-					"IpProtocol": "tcp",
-					"FromPort": "3306",
-					"ToPort": "3306",
-					"SourceSecurityGroupId": {"Ref": "WebServerSecurityGroup"}
-				}]
-			}
-		},
-		"Database": {
-			"Type": "AWS::RDS::DBInstance",
-			"Properties": {
-				"AllocatedStorage": "5",
-				"DBInstanceClass": "db.t2.micro",
-				"DBInstanceIdentifier": "awsinaction-db",
-				"DBName": "wordpress",
-				"Engine": "MySQL",
-				"MasterUsername": "wordpress",
-				"MasterUserPassword": "wordpress",
-				"VPCSecurityGroups": [{"Fn::GetAtt": ["DatabaseSecurityGroup", "GroupId"]}],
-				"DBSubnetGroupName": {"Ref": "DBSubnetGroup"},
-				"PreferredMaintenanceWindow": "Sun:06:00-Sun:07:00",
-				"BackupRetentionPeriod": 3,
-				"PreferredBackupWindow": "05:00-06:00"
-			}
-		},
-		"DBSubnetGroup" : {
-			"Type" : "AWS::RDS::DBSubnetGroup",
-			"Properties" : {
-				"DBSubnetGroupDescription" : "DB subnet group",
-				"SubnetIds": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}]
-			}
-		},
 		"LaunchConfiguration": {
 			"Type": "AWS::AutoScaling::LaunchConfiguration",
 			"Metadata": {
@@ -225,24 +189,15 @@
 					"config": {
 						"packages": {
 							"yum": {
-								"php": [],
-								"php-mysql": [],
-								"mysql": [],
 								"httpd": []
 							}
-						},
-						"sources": {
-							"/var/www/html": "http://wordpress.org/latest.tar.gz"
 						},
 						"files": {
 							"/tmp/config": {
 								"content": {"Fn::Join": ["", [
 									"#!/bin/bash\n",
-									"cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php\n",
-									"sed -i \"s/'database_name_here'/'wordpress'/g\" wp-config.php\n",
-									"sed -i \"s/'username_here'/'wordpress'/g\" wp-config.php\n",
-									"sed -i \"s/'password_here'/'wordpress'/g\" wp-config.php\n",
-									"sed -i \"s/'localhost'/'", {"Fn::GetAtt": ["Database", "Endpoint.Address"]}, "'/g\" wp-config.php\n"
+									"PRIVATE_IP=`curl -s http://169.254.169.254/latest/meta-data/local-ipv4`\n",
+									"echo \"<html><head><title>$PRIVATE_IP</title></head><body><h1>$PRIVATE_IP</h1></body></html>\" > index.html\n"
 								]]},
 								"mode": "000500",
 								"owner": "root",
@@ -252,7 +207,7 @@
 						"commands": {
 							"01_config": {
 								"command": "/tmp/config",
-								"cwd": "/var/www/html/wordpress"
+								"cwd": "/var/www/html"
 							}
 						},
 						"services": {
@@ -300,8 +255,8 @@
 	},
 	"Outputs": {
 		"URL": {
-			"Value": {"Fn::Join": ["", ["http://", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]}, "/wordpress"]]},
-			"Description": "Wordpress URL"
+			"Value": {"Fn::Join": ["", ["http://", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]}]]},
+			"Description": "Load Balancer URL"
 		}
 	}
 }
