@@ -48,19 +48,11 @@
 				"InternetGatewayId": {"Ref": "InternetGateway"}
 			}
 		},
-		"SubnetA": {
+		"Subnet": {
 			"Type": "AWS::EC2::Subnet",
 			"Properties": {
 				"AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "a"]]},
 				"CidrBlock": "172.31.38.0/24",
-				"VpcId": {"Ref": "VPC"}
-			}
-		},
-		"SubnetB": {
-			"Type": "AWS::EC2::Subnet",
-			"Properties": {
-				"AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "b"]]},
-				"CidrBlock": "172.31.37.0/24",
 				"VpcId": {"Ref": "VPC"}
 			}
 		},
@@ -70,17 +62,10 @@
 				"VpcId": {"Ref": "VPC"}
 			}
 		},
-		"RouteTableAssociationA": {
+		"RouteTableAssociation": {
 			"Type": "AWS::EC2::SubnetRouteTableAssociation",
 			"Properties": {
-				"SubnetId": {"Ref": "SubnetA"},
-				"RouteTableId": {"Ref": "RouteTable"}
-			}
-		},
-		"RouteTableAssociationB": {
-			"Type": "AWS::EC2::SubnetRouteTableAssociation",
-			"Properties": {
-				"SubnetId": {"Ref": "SubnetB"},
+				"SubnetId": {"Ref": "Subnet"},
 				"RouteTableId": {"Ref": "RouteTable"}
 			}
 		},
@@ -99,17 +84,10 @@
 				"VpcId": {"Ref": "VPC"}
 			}
 		},
-		"SubnetNetworkAclAssociationA": {
+		"SubnetNetworkAclAssociation": {
 			"Type": "AWS::EC2::SubnetNetworkAclAssociation",
 			"Properties": {
-				"SubnetId": {"Ref": "SubnetA"},
-				"NetworkAclId": {"Ref": "NetworkAcl"}
-			}
-		},
-		"SubnetNetworkAclAssociationB": {
-			"Type": "AWS::EC2::SubnetNetworkAclAssociation",
-			"Properties": {
-				"SubnetId": {"Ref": "SubnetB"},
+				"SubnetId": {"Ref": "Subnet"},
 				"NetworkAclId": {"Ref": "NetworkAcl"}
 			}
 		},
@@ -151,7 +129,7 @@
 		"LoadBalancer": {
 			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 			"Properties": {
-				"Subnets": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
+				"Subnets": [{"Ref": "Subnet"}],
 				"LoadBalancerName": "elb",
 				"Listeners": [{
 					"InstancePort": "80",
@@ -159,12 +137,11 @@
 					"LoadBalancerPort": "80",
 					"Protocol": "HTTP"
 				}],
-				"CrossZone": true,
 				"HealthCheck": {
-					"HealthyThreshold": "2",
-					"Interval": "5",
-					"Target": "TCP:80",
-					"Timeout": "3",
+					"HealthyThreshold": "3",
+					"Interval": "10",
+					"Target": "HTTP:80/index.html",
+					"Timeout": "5",
 					"UnhealthyThreshold": "2"
 				},
 				"SecurityGroups": [{"Ref": "LoadBalancerSecurityGroup"}],
@@ -251,7 +228,7 @@
 				"MinSize": {"Ref": "NumberOfServers"},
 				"MaxSize": {"Ref": "NumberOfServers"},
 				"DesiredCapacity": {"Ref": "NumberOfServers"},
-				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}]
+				"VPCZoneIdentifier": [{"Ref": "Subnet"}]
 			},
 			"CreationPolicy": {
 				"ResourceSignal": {
