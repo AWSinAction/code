@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Jenkins (CI server) started within a Auto Scaling Group",
+	"Description": "Jenkins (CI server) running on EC2 with AWS CloudWatch recovery",
 	"Parameters": {
 		"KeyName": {
 			"Description": "Key Pair name",
