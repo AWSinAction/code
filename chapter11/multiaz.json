@@ -339,7 +339,6 @@
 		"LaunchConfiguration": {
 			"Type": "AWS::AutoScaling::LaunchConfiguration",
 			"Properties": {
-				"EbsOptimized": false,
 				"InstanceMonitoring": false,
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"KeyName": {"Ref": "KeyName"},
@@ -374,12 +373,10 @@
 						"PropagateAtLaunch": true
 					}
 				],
-				"Cooldown": "600",
 				"DesiredCapacity": 1,
 				"MinSize": 1,
 				"MaxSize": 1,
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
-				"TerminationPolicies": ["Default"],
 				"HealthCheckGracePeriod": 600,
 				"HealthCheckType": "EC2",
 				"AvailabilityZones": [{"Fn::Join": ["", [{"Ref": "AWS::Region"}, "a"]]}, {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "b"]]}]
