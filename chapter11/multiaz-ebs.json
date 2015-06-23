@@ -32,7 +32,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -48,7 +48,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -64,7 +64,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -75,7 +75,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -100,7 +100,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -149,7 +149,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -305,7 +305,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				],
 				"SecurityGroupIngress": [
@@ -333,7 +333,6 @@
 		"LaunchConfiguration": {
 			"Type": "AWS::AutoScaling::LaunchConfiguration",
 			"Properties": {
-				"EbsOptimized": false,
 				"InstanceMonitoring": false,
 				"ImageId": {"Ref": "AMISnapshot"},
 				"KeyName": {"Ref": "KeyName"},
@@ -364,11 +363,10 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins",
+						"Value": "jenkins-multiaz",
 						"PropagateAtLaunch": true
 					}
 				],
-				"Cooldown": "600",
 				"DesiredCapacity": 1,
 				"MinSize": 1,
 				"MaxSize": 1,
