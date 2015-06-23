@@ -38,7 +38,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-recovery"
 					}
 				]
 			}
@@ -54,7 +54,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-recovery"
 					}
 				]
 			}
@@ -65,7 +65,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-recovery"
 					}
 				]
 			}
@@ -90,7 +90,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-recovery"
 					}
 				]
 			}
@@ -128,7 +128,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-recovery"
 					}
 				]
 			}
@@ -273,7 +273,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-recovery"
 					}
 				],
 				"SecurityGroupIngress": [
@@ -321,7 +321,13 @@
 					"sed -i -e 's/JENKINS_ARGS=\\\"\\\"/JENKINS_ARGS=\\\"--argumentsRealm.passwd.admin=", {"Ref": "JenkinsAdminPassword"}, " --argumentsRealm.roles.admin=admin\\\"/g' /etc/sysconfig/jenkins\n",
 					"echo \"<?xml version='1.0' encoding='UTF-8'?><hudson><version>1.0</version><useSecurity>true</useSecurity><authorizationStrategy class=\\\"hudson.security.FullControlOnceLoggedInAuthorizationStrategy\\\"/><securityRealm class=\\\"hudson.security.LegacySecurityRealm\\\"/></hudson>\" > /var/lib/jenkins/config.xml\n",
 					"service jenkins start\n"
-				]]}}
+				]]}},
+				"Tags": [
+					{
+						"Key": "Name",
+						"Value": "jenkins-recovery"
+					}
+				]
 			}
 		},
 		"RecoveryAlarm": {

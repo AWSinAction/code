@@ -38,7 +38,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -54,7 +54,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -70,7 +70,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -81,7 +81,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -106,7 +106,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -155,7 +155,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				]
 			}
@@ -311,7 +311,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins"
+						"Value": "jenkins-multiaz"
 					}
 				],
 				"SecurityGroupIngress": [
@@ -369,7 +369,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins",
+						"Value": "jenkins-multiaz",
 						"PropagateAtLaunch": true
 					}
 				],
