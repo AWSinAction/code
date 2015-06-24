@@ -377,7 +377,6 @@
 		},
 		"ElasticIP": {
 			"Type": "AWS::EC2::EIP",
-			"DependsOn": "GatewayToInternet",
 			"Properties": {
 				"Domain": "vpc"
 			}
