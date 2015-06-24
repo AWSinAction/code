@@ -399,9 +399,9 @@
 							"",
 							[
 								"#!/bin/bash\n",
-								"aws configure set default.region `curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\\\" '{print $4}'`\n"
-								"INSTANCE_ID=`curl -s http://169.254.169.254/latest/meta-data/instance-id`\n"
-								"aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id ", {"Ref": "ElasticIP"} ,"\n"
+								"aws configure set default.region `curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\\\" '{print $4}'`\n",
+								"INSTANCE_ID=`curl -s http://169.254.169.254/latest/meta-data/instance-id`\n",
+								"aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id ", {"Fn::GetAtt": ["ElasticIP", "AllocationId"]}, "\n",
 								"wget http://pkg.jenkins-ci.org/redhat/jenkins-1.616-1.1.noarch.rpm\n",
 								"rpm --install jenkins-1.616-1.1.noarch.rpm\n",
 								"sed -i -e 's/JENKINS_ARGS=\\\"\\\"/JENKINS_ARGS=\\\"--argumentsRealm.passwd.admin=", {"Ref": "JenkinsAdminPassword"}, " --argumentsRealm.roles.admin=admin\\\"/g' /etc/sysconfig/jenkins\n",
@@ -420,7 +420,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins-elasticip"
+						"Value": "jenkins-elasticip",
 						"PropagateAtLaunch": true
 					}
 				],
@@ -432,6 +432,20 @@
 				"HealthCheckType": "EC2",
 				"AvailabilityZones": [{"Fn::Join": ["", [{"Ref": "AWS::Region"}, "a"]]}, {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "b"]]}]
 			}
+		}
+	},
+	"Outputs": {
+		"JenkinsURL": {
+			"Description": "URL to access web interface of Jenkins server.",
+			"Value": {"Fn::Join": ["", ["http://", {"Ref": "ElasticIP"}, ":8080"]]}
+		},
+		"User": {
+			"Description": "Administrator user for Jenkins.",
+			"Value": "admin"
+		},
+		"Password": {
+			"Description": "Password for Jenkins administrator user.",
+			"Value": {"Ref": "JenkinsAdminPassword"}
 		}
 	}
 }
