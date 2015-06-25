@@ -373,8 +373,7 @@
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
 				"TerminationPolicies": ["Default"],
 				"HealthCheckGracePeriod": 600,
-				"HealthCheckType": "EC2",
-				"AvailabilityZones": [{"Fn::Join": ["", [{"Ref": "AWS::Region"}, "a"]]}, {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "b"]]}]
+				"HealthCheckType": "EC2"
 			}
 		}
 	}
