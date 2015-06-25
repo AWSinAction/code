@@ -41,7 +41,9 @@ function process(body, cb) {
 function receive(cb) {
 	sqs.receiveMessage({
 		"QueueUrl": config.QueueUrl,
-		"MaxNumberOfMessages": 1
+		"MaxNumberOfMessages": 1,
+		"VisibilityTimeout": 120,
+		"WaitTimeSeconds": 30
 	}, function(err, data) {
 		if (err) {
 			cb(err);
@@ -55,8 +57,10 @@ function receive(cb) {
 					if (err) {
 						cb(err);
 					} else {
-						// TODO delete message
-						cb();
+						sqs.deleteMessage({
+							"QueueUrl": config.QueueUrl,
+							"ReceiptHandle": message.ReceiptHandle
+						}, cb);
 					}
 				});
 			}
@@ -64,10 +68,15 @@ function receive(cb) {
 	});
 }
 
-receive(function(err) {
-	if (err) {
-		console.log("error", err);
-	} else {
-		console.log("done");
-	}
-});
+function run() {
+	receive(function(err) {
+		if (err) {
+			console.log("error", err);
+		} else {
+			console.log("done");
+			process.nextTick(run);
+		}
+	});
+}
+
+run();
