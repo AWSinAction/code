@@ -9,7 +9,16 @@ var s3 = new AWS.S3({
 	"region": "us-east-1"
 });
 
-function process(body, cb) {
+function acknowledge(message, cb) {
+	var params = {
+		"QueueUrl": config.QueueUrl,
+		"ReceiptHandle": message.ReceiptHandle
+	};
+	sqs.deleteMessage(params, cb);
+}
+
+function process(message, cb) {
+	var body = JSON.parse(message.Body);
 	var file = body.id + '.png';
 	webshot(body.url, file, function(err) {
 		if (err) {
@@ -19,13 +28,14 @@ function process(body, cb) {
 				if (err) {
 					cb(err);
 				} else {
-					s3.putObject({
+					var params = {
 						"Bucket": config.Bucket,
 						"Key": file,
 						"ACL": "public-read",
 						"ContentType": "image/png",
 						"Body": buf
-					}, function(err) {
+					};
+					s3.putObject(params, function(err) {
 						if (err) {
 							cb(err);
 						} else {
@@ -39,43 +49,50 @@ function process(body, cb) {
 }
 
 function receive(cb) {
-	sqs.receiveMessage({
+	var params = {
 		"QueueUrl": config.QueueUrl,
 		"MaxNumberOfMessages": 1,
 		"VisibilityTimeout": 120,
 		"WaitTimeSeconds": 10
-	}, function(err, data) {
+	};
+	sqs.receiveMessage(params, function(err, data) {
 		if (err) {
 			cb(err);
 		} else {
 			if (data.Messages === undefined) {
-				cb();
+				cb(null, null);
 			} else {
-				var message = data.Messages[0];
-				var body = JSON.parse(message.Body);
-				console.log("processing", body);
-				process(body, function(err) {
-					if (err) {
-						cb(err);
-					} else {
-						sqs.deleteMessage({
-							"QueueUrl": config.QueueUrl,
-							"ReceiptHandle": message.ReceiptHandle
-						}, cb);
-					}
-				});
+				cb(null, data.Messages[0]);
 			}
 		}
 	});
 }
 
 function run() {
-	receive(function(err) {
+	receive(function(err, message) {
 		if (err) {
-			console.log("error", err);
+			throw err;
 		} else {
-			console.log("done");
-			setTimeout(run, 1000);
+			if (message === null) {
+				console.log("nothing to do");
+				setTimeout(run, 1000);
+			} else {
+				console.log("process");
+				process(message, function(err) {
+					if (err) {
+						throw err;
+					} else {
+						acknowledge(message, function(err) {
+							if (err) {
+								throw err;
+							} else {
+								console.log("done");
+								setTimeout(run, 1000);
+							}
+						});
+					}
+				});
+			}
 		}
 	});
 }
