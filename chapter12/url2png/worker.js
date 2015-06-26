@@ -43,7 +43,7 @@ function receive(cb) {
 		"QueueUrl": config.QueueUrl,
 		"MaxNumberOfMessages": 1,
 		"VisibilityTimeout": 120,
-		"WaitTimeSeconds": 30
+		"WaitTimeSeconds": 10
 	}, function(err, data) {
 		if (err) {
 			cb(err);
@@ -53,6 +53,7 @@ function receive(cb) {
 			} else {
 				var message = data.Messages[0];
 				var body = JSON.parse(message.Body);
+				console.log("processing", body);
 				process(body, function(err) {
 					if (err) {
 						cb(err);
@@ -74,7 +75,7 @@ function run() {
 			console.log("error", err);
 		} else {
 			console.log("done");
-			process.nextTick(run);
+			setTimeout(run, 1000);
 		}
 	});
 }

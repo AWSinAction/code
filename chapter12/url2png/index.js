@@ -23,6 +23,6 @@ sqs.sendMessage({
 	if (err) {
 		console.log('error', err);
 	} else {
-		console.log('PNG will be available soon at http://' + config.Bucket + '.s3-website-us-east-1.amazonaws.com/' + id + '.png');
+		console.log('PNG will be soon available at http://' + config.Bucket + '.s3-website-us-east-1.amazonaws.com/' + id + '.png');
 	}
 });
