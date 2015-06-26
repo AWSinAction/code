@@ -74,10 +74,10 @@ function run() {
 			throw err;
 		} else {
 			if (message === null) {
-				console.log("nothing to do");
+				console.log('nothing to do');
 				setTimeout(run, 1000);
 			} else {
-				console.log("process");
+				console.log('process');
 				process(message, function(err) {
 					if (err) {
 						throw err;
@@ -86,7 +86,7 @@ function run() {
 							if (err) {
 								throw err;
 							} else {
-								console.log("done");
+								console.log('done');
 								setTimeout(run, 1000);
 							}
 						});
