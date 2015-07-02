@@ -335,7 +335,7 @@
 			"Properties": {
 				"AlarmDescription": "Recover server when underlying hardware fails.",
 				"Namespace": "AWS/EC2" ,
-				"MetricName": "StatusCheckFailed_System",
+				"MetricName": "StatusCheckFailed",
 				"Statistic": "Minimum",
 				"Period": "60",
 				"EvaluationPeriods": "5",
