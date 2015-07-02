@@ -283,7 +283,6 @@
 			"Type": "AWS::AutoScaling::AutoScalingGroup",
 			"Properties": {
 				"LoadBalancerNames": [{"Ref": "LoadBalancer"}],
-				"AvailabilityZones": [{"Fn::Join": ["", [{"Ref": "AWS::Region"}, "a"]]}, {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "b"]]}],
 				"LaunchConfigurationName": {"Ref": "LaunchConfiguration"},
 				"MinSize": "2",
 				"MaxSize": "2",
