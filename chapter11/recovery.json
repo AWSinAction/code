@@ -333,7 +333,7 @@
 		"RecoveryAlarm": {
 			"Type": "AWS::CloudWatch::Alarm",
 			"Properties": {
-				"AlarmDescription": "Recover server when underlying hardware fails.",
+				"AlarmDescription": "Monitor virtual server and recover if needed.",
 				"Namespace": "AWS/EC2" ,
 				"MetricName": "StatusCheckFailed",
 				"Statistic": "Minimum",
