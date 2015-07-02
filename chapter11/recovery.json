@@ -333,12 +333,12 @@
 		"RecoveryAlarm": {
 			"Type": "AWS::CloudWatch::Alarm",
 			"Properties": {
-				"AlarmDescription": "Monitor virtual server and recover if needed.",
+				"AlarmDescription": "Recover server when underlying hardware fails.",
 				"Namespace": "AWS/EC2" ,
-				"MetricName": "StatusCheckFailed",
+				"MetricName": "StatusCheckFailed_System",
 				"Statistic": "Minimum",
 				"Period": "60",
-				"EvaluationPeriods": "1",
+				"EvaluationPeriods": "5",
 				"ComparisonOperator": "GreaterThanThreshold",
 				"Threshold": "0",
 				"AlarmActions": [{"Fn::Join": ["", ["arn:aws:automate:", { "Ref": "AWS::Region"}, ":ec2:recover"]]}],
