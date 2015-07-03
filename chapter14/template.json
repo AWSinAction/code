@@ -10,6 +10,24 @@
 		"BlogID": {
 			"Description": "A unique identifier for your blog.",
 			"Type": "String"
+		},
+		"BlogTitle": {
+			"Description": "The title of the blog.",
+			"Type": "String",
+			"Default": "Amazon Web Services in Action - Example"
+		},
+		"AdminUsername": {
+			"Description": "A username for admin.",
+			"Type": "String",
+			"Default": "admin"
+		},
+		"AdminPassword": {
+			"Description": "A unique identifier for your blog.",
+			"Type": "String"
+		},
+		"AdminEMail": {
+			"Description": "The email address of the administrator.",
+			"Type": "String"
 		}
 	},
 	"Mappings": {
@@ -136,7 +154,7 @@
 			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 			"Properties": {
 				"Subnets": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
-				"LoadBalancerName": "awsinaction-elb",
+				"LoadBalancerName": {"Ref": "BlogID"},
 				"Listeners": [{
 					"InstancePort": "80",
 					"InstanceProtocol": "HTTP",
@@ -203,7 +221,7 @@
 			"Properties": {
 				"AllocatedStorage": "5",
 				"DBInstanceClass": "db.t2.micro",
-				"DBInstanceIdentifier": "awsinaction-db",
+				"DBInstanceIdentifier": {"Ref": "BlogID"},
 				"DBName": "wordpress",
 				"Engine": "MySQL",
 				"MasterUsername": "wordpress",
@@ -279,10 +297,11 @@
 									"echo \"define('AWS_ACCESS_KEY_ID', '", {"Ref" : "IAMAccessKey"},"'); \" >> wp-config.php \n",
 									"echo \"define('AWS_SECRET_ACCESS_KEY', '", {"Fn::GetAtt": ["IAMAccessKey", "SecretAccessKey"]},"'); \" >> wp-config.php \n",
 									"curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \n",
-									"php wp-cli.phar core install --url=\"", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]}, "/wordpress\" --title=\"AWSinAction\" --admin_user=\"wordpress\" --admin_password=\"wordpress\" --admin_email=\"replaceme@test.com\" \n",
+									"php wp-cli.phar core install --url=\"", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]}, "/wordpress\" --title=\"", {"Ref": "BlogTitle"}, "\" --admin_user=\"", {"Ref": "AdminUsername"}, "\" --admin_password=\"", {"Ref": "AdminPassword"}, "\" --admin_email=\"", {"Ref": "AdminEMail"}, "\" \n",
 									"php wp-cli.phar plugin install --activate amazon-web-services \n",
 									"php wp-cli.phar plugin install --activate amazon-s3-and-cloudfront \n",
-									"php wp-cli.phar db query \"DELETE FROM wp_options WHERE option_name = 'tantan_wordpress_s3'; INSERT INTO wp_options (option_name, option_value, autoload) VALUES('tantan_wordpress_s3', 'a:15:{s:17:\\\"post_meta_version\\\";i:1;s:6:\\\"bucket\\\";s:23:\\\"", {"Ref": "BlogID"},"\\\";s:6:\\\"region\\\";s:0:\\\"\\\";s:6:\\\"domain\\\";s:9:\\\"subdomain\\\";s:7:\\\"expires\\\";s:1:\\\"0\\\";s:10:\\\"cloudfront\\\";s:0:\\\"\\\";s:13:\\\"object-prefix\\\";s:19:\\\"wp-content/uploads/\\\";s:10:\\\"copy-to-s3\\\";s:1:\\\"1\\\";s:13:\\\"serve-from-s3\\\";s:1:\\\"1\\\";s:17:\\\"remove-local-file\\\";s:1:\\\"0\\\";s:3:\\\"ssl\\\";s:7:\\\"request\\\";s:12:\\\"hidpi-images\\\";s:1:\\\"0\\\";s:17:\\\"object-versioning\\\";s:1:\\\"0\\\";s:21:\\\"use-yearmonth-folders\\\";s:1:\\\"1\\\";s:20:\\\"enable-object-prefix\\\";s:1:\\\"1\\\";}', 'yes');\" \n"
+									"CHARCOUNT=`printf \"",{"Ref": "BlogID"} ,"\" | wc -c` \n",
+									"php wp-cli.phar db query \"DELETE FROM wp_options WHERE option_name = 'tantan_wordpress_s3'; INSERT INTO wp_options (option_name, option_value, autoload) VALUES('tantan_wordpress_s3', 'a:15:{s:17:\\\"post_meta_version\\\";i:1;s:6:\\\"bucket\\\";s:", "$CHARCOUNT", ":\\\"", {"Ref": "BlogID"},"\\\";s:6:\\\"region\\\";s:0:\\\"\\\";s:6:\\\"domain\\\";s:9:\\\"subdomain\\\";s:7:\\\"expires\\\";s:1:\\\"0\\\";s:10:\\\"cloudfront\\\";s:0:\\\"\\\";s:13:\\\"object-prefix\\\";s:19:\\\"wp-content/uploads/\\\";s:10:\\\"copy-to-s3\\\";s:1:\\\"1\\\";s:13:\\\"serve-from-s3\\\";s:1:\\\"1\\\";s:17:\\\"remove-local-file\\\";s:1:\\\"0\\\";s:3:\\\"ssl\\\";s:7:\\\"request\\\";s:12:\\\"hidpi-images\\\";s:1:\\\"0\\\";s:17:\\\"object-versioning\\\";s:1:\\\"0\\\";s:21:\\\"use-yearmonth-folders\\\";s:1:\\\"1\\\";s:20:\\\"enable-object-prefix\\\";s:1:\\\"1\\\";}', 'yes');\" \n"
 								]]},
 								"mode": "000500",
 								"owner": "root",
@@ -326,9 +345,9 @@
 			"Properties": {
 				"LoadBalancerNames": [{"Ref": "LoadBalancer"}],
 				"LaunchConfigurationName": {"Ref": "LaunchConfiguration"},
-				"MinSize": "2",
-				"MaxSize": "2",
-				"DesiredCapacity": "2",
+				"MinSize": "1",
+				"MaxSize": "1",
+				"DesiredCapacity": "1",
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}]
 			},
 			"CreationPolicy": {
