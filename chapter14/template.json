@@ -6,6 +6,10 @@
 			"Description": "Key Pair name",
 			"Type": "AWS::EC2::KeyPair::KeyName",
 			"Default": "mykey"
+		},
+		"BlogID": {
+			"Description": "A unique identifier for your blog.",
+			"Type": "String"
 		}
 	},
 	"Mappings": {
@@ -215,6 +219,37 @@
 				"SubnetIds": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}]
 			}
 		},
+		"S3Bucket": {
+			"Type": "AWS::S3::Bucket",
+			"Properties": {
+				"BucketName": {"Ref": "BlogID"}
+			}
+		},
+		"IAMUser" : {
+			"Type" : "AWS::IAM::User",
+			"Properties" : {
+				"Path" : "/",
+				"Policies" : [ {
+					"PolicyName" : "UploadToS3",
+					"PolicyDocument" : {
+						"Version": "2012-10-17",
+						"Statement" : [ {
+							"Effect" : "Allow",
+							"Action" : [ "s3:*" ],
+							"Resource" : [
+								{"Fn::Join": ["", ["arn:aws:s3:::", {"Ref": "BlogID"} ,"/*"]]}
+							]
+						}] 
+					}
+      			}]
+			}
+		},
+		"IAMAccessKey" : {
+			"Type" : "AWS::IAM::AccessKey",
+			"Properties" : {
+				"UserName" : { "Ref" : "IAMUser" }
+			}
+		}, 
 		"LaunchConfiguration": {
 			"Type": "AWS::AutoScaling::LaunchConfiguration",
 			"Metadata": {
@@ -241,13 +276,13 @@
 									"sed -i \"s/'password_here'/'wordpress'/g\" wp-config.php\n",
 									"sed -i \"s/'localhost'/'", {"Fn::GetAtt": ["Database", "Endpoint.Address"]}, "'/g\" wp-config.php\n",
 									"chmod -R 777 wp-content/ \n",
-									"echo \"define('AWS_ACCESS_KEY_ID', 'AKIAIG5XXI5WH2SLTOIQ'); \" >> wp-config.php \n",
-									"echo \"define('AWS_SECRET_ACCESS_KEY', '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'); \" >> wp-config.php \n",
+									"echo \"define('AWS_ACCESS_KEY_ID', '", {"Ref" : "IAMAccessKey"},"'); \" >> wp-config.php \n",
+									"echo \"define('AWS_SECRET_ACCESS_KEY', '", {"Fn::GetAtt": ["IAMAccessKey", "SecretAccessKey"]},"'); \" >> wp-config.php \n",
 									"curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \n",
-									"php wp-cli.phar core install --url=\"awsinaction-elb-1866588724.us-east-1.elb.amazonaws.com/wordpress\" --title=\"AWSinAction\" --admin_user=\"admin\" --admin_password=\"test1234\" --admin_email=\"andreas@widdix.de\" \n",
+									"php wp-cli.phar core install --url=\"", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]}, "/wordpress\" --title=\"AWSinAction\" --admin_user=\"wordpress\" --admin_password=\"wordpress\" --admin_email=\"replaceme@test.com\" \n",
 									"php wp-cli.phar plugin install --activate amazon-web-services \n",
 									"php wp-cli.phar plugin install --activate amazon-s3-and-cloudfront \n",
-									"php wp-cli.phar db query \"DELETE FROM wp_options WHERE option_name = 'tantan_wordpress_s3'; INSERT INTO wp_options (option_name, option_value, autoload) VALUES('tantan_wordpress_s3', 'a:15:{s:17:\\\"post_meta_version\\\";i:1;s:6:\\\"bucket\\\";s:23:\\\"wordpress-aws-in-action\\\";s:6:\\\"region\\\";s:0:\\\"\\\";s:6:\\\"domain\\\";s:9:\\\"subdomain\\\";s:7:\\\"expires\\\";s:1:\\\"0\\\";s:10:\\\"cloudfront\\\";s:0:\\\"\\\";s:13:\\\"object-prefix\\\";s:19:\\\"wp-content/uploads/\\\";s:10:\\\"copy-to-s3\\\";s:1:\\\"1\\\";s:13:\\\"serve-from-s3\\\";s:1:\\\"1\\\";s:17:\\\"remove-local-file\\\";s:1:\\\"0\\\";s:3:\\\"ssl\\\";s:7:\\\"request\\\";s:12:\\\"hidpi-images\\\";s:1:\\\"0\\\";s:17:\\\"object-versioning\\\";s:1:\\\"0\\\";s:21:\\\"use-yearmonth-folders\\\";s:1:\\\"1\\\";s:20:\\\"enable-object-prefix\\\";s:1:\\\"1\\\";}', 'yes');\" \n"
+									"php wp-cli.phar db query \"DELETE FROM wp_options WHERE option_name = 'tantan_wordpress_s3'; INSERT INTO wp_options (option_name, option_value, autoload) VALUES('tantan_wordpress_s3', 'a:15:{s:17:\\\"post_meta_version\\\";i:1;s:6:\\\"bucket\\\";s:23:\\\"", {"Ref": "BlogID"},"\\\";s:6:\\\"region\\\";s:0:\\\"\\\";s:6:\\\"domain\\\";s:9:\\\"subdomain\\\";s:7:\\\"expires\\\";s:1:\\\"0\\\";s:10:\\\"cloudfront\\\";s:0:\\\"\\\";s:13:\\\"object-prefix\\\";s:19:\\\"wp-content/uploads/\\\";s:10:\\\"copy-to-s3\\\";s:1:\\\"1\\\";s:13:\\\"serve-from-s3\\\";s:1:\\\"1\\\";s:17:\\\"remove-local-file\\\";s:1:\\\"0\\\";s:3:\\\"ssl\\\";s:7:\\\"request\\\";s:12:\\\"hidpi-images\\\";s:1:\\\"0\\\";s:17:\\\"object-versioning\\\";s:1:\\\"0\\\";s:21:\\\"use-yearmonth-folders\\\";s:1:\\\"1\\\";s:20:\\\"enable-object-prefix\\\";s:1:\\\"1\\\";}', 'yes');\" \n"
 								]]},
 								"mode": "000500",
 								"owner": "root",
