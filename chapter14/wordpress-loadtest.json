@@ -9,7 +9,9 @@
 		},
 		"BlogID": {
 			"Description": "A unique identifier for your blog.",
-			"Type": "String"
+			"Type": "String",
+			"AllowedPattern": "[A-Za-z0-9\\-]+",
+			"ConstraintDescription": "Only letters, digits or dash allowed."
 		},
 		"BlogTitle": {
 			"Description": "The title of the blog.",
@@ -169,7 +171,8 @@
 					"UnhealthyThreshold": "2"
 				},
 				"SecurityGroups": [{"Ref": "LoadBalancerSecurityGroup"}],
-				"Scheme": "internet-facing"
+				"Scheme": "internet-facing",
+				"CrossZone": true
 			}
 		},
 		"LoadBalancerSecurityGroup": {
@@ -200,6 +203,19 @@
 					"IpProtocol": "tcp",
 					"SourceSecurityGroupId": {"Ref": "LoadBalancerSecurityGroup"},
 					"ToPort": 80
+				}]
+			}
+		},
+		"LoadTestSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "awsinaction-sg",
+				"VpcId": {"Ref": "VPC"},
+				"SecurityGroupIngress": [{
+					"CidrIp": "0.0.0.0/0",
+					"FromPort": 22,
+					"IpProtocol": "tcp",
+					"ToPort": 22
 				}]
 			}
 		},
@@ -345,15 +361,90 @@
 			"Properties": {
 				"LoadBalancerNames": [{"Ref": "LoadBalancer"}],
 				"LaunchConfigurationName": {"Ref": "LaunchConfiguration"},
-				"MinSize": "1",
-				"MaxSize": "1",
-				"DesiredCapacity": "1",
+				"MinSize": "2",
+				"MaxSize": "4",
+				"DesiredCapacity": "2",
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}]
 			},
 			"CreationPolicy": {
 				"ResourceSignal": {
 					"Timeout": "PT10M"
 				}
+			}
+		},
+		"ScalingUpPolicy": {
+			"Type": "AWS::AutoScaling::ScalingPolicy",
+			"Properties": {
+				"AdjustmentType": "ChangeInCapacity",
+				"AutoScalingGroupName": {"Ref": "AutoScalingGroup"},
+				"Cooldown": "1",
+				"ScalingAdjustment": "1"
+			}
+		},
+		"CPUHighAlarm": {
+			"Type": "AWS::CloudWatch::Alarm",
+			"Properties": {
+				"EvaluationPeriods": "1",
+				"Statistic": "Average",
+				"Threshold": "80",
+				"AlarmDescription": "Alarm if CPU load is high.",
+				"Period": "60",
+				"AlarmActions": [{"Ref": "ScalingUpPolicy"}],
+				"Namespace": "AWS/EC2",
+				"Dimensions": [{
+					"Name": "AutoScalingGroupName",
+					"Value": {"Ref": "AutoScalingGroup"}
+				}],
+				"ComparisonOperator": "GreaterThanThreshold",
+				"MetricName": "CPUUtilization"
+			}
+		},
+		"ScalingDownPolicy": {
+			"Type": "AWS::AutoScaling::ScalingPolicy",
+			"Properties": {
+				"AdjustmentType": "ChangeInCapacity",
+				"AutoScalingGroupName": {"Ref": "AutoScalingGroup"},
+				"Cooldown": "30",
+				"ScalingAdjustment": "-1"
+			}
+		},
+		"CPULowAlarm": {
+			"Type": "AWS::CloudWatch::Alarm",
+			"Properties": {
+				"EvaluationPeriods": "1",
+				"Statistic": "Average",
+				"Threshold": "20",
+				"AlarmDescription": "Alarm if CPU load is low.",
+				"Period": "60",
+				"AlarmActions": [{"Ref": "ScalingDownPolicy"}],
+				"Namespace": "AWS/EC2",
+				"Dimensions": [{
+					"Name": "AutoScalingGroupName",
+					"Value": {"Ref": "AutoScalingGroup"}
+				}],
+				"ComparisonOperator": "LessThanThreshold",
+				"MetricName": "CPUUtilization"
+			}
+		},
+		"Server": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
+				"InstanceType": "t2.micro",
+				"KeyName": {"Ref": "KeyName"},
+				"SecurityGroupIds": [{"Ref": "LoadTestSecurityGroup"}],
+				"SubnetId": {"Ref": "SubnetA"},
+				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
+					"#!/bin/bash\n",
+					" yum install -y httpd-tools\n",
+					"ab -n 10000 -c 2 http://", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]} ,"/wordpress/\n",
+				]]}},
+				"Tags": [
+					{
+						"Key": "Name",
+						"Value": "jenkins-recovery"
+					}
+				]
 			}
 		}
 	},
