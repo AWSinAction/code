@@ -44,7 +44,7 @@
 		"SubnetA": {
 			"Type": "AWS::EC2::Subnet",
 			"Properties": {
-				"AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "a"]]},
+				"AvailabilityZone": {"Fn::Select": ["0", {"Fn::GetAZs": ""}]},
 				"CidrBlock": "172.31.38.0/24",
 				"VpcId": {"Ref": "VPC"}
 			}
@@ -52,7 +52,7 @@
 		"SubnetB": {
 			"Type": "AWS::EC2::Subnet",
 			"Properties": {
-				"AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "b"]]},
+				"AvailabilityZone": {"Fn::Select": ["1", {"Fn::GetAZs": ""}]},
 				"CidrBlock": "172.31.37.0/24",
 				"VpcId": {"Ref": "VPC"}
 			}
