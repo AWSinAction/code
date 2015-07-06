@@ -49,7 +49,7 @@
 				"VpcId": {
 					"Ref": "VPC"
 				},
-				"AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "a"]]},
+				"AvailabilityZone": {"Fn::Select": ["0", {"Fn::GetAZs": ""}]},
 				"CidrBlock": "10.0.0.0/24",
 				"Tags": [
 					{
@@ -65,7 +65,7 @@
 				"VpcId": {
 					"Ref": "VPC"
 				},
-				"AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "b"]]},
+				"AvailabilityZone": {"Fn::Select": ["1", {"Fn::GetAZs": ""}]},
 				"CidrBlock": "10.0.1.0/24",
 				"Tags": [
 					{
