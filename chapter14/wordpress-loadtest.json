@@ -68,7 +68,7 @@
 		"SubnetA": {
 			"Type": "AWS::EC2::Subnet",
 			"Properties": {
-				"AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "a"]]},
+				"AvailabilityZone": {"Fn::Select": ["0", {"Fn::GetAZs": ""}]},
 				"CidrBlock": "172.31.38.0/24",
 				"VpcId": {"Ref": "VPC"}
 			}
@@ -76,7 +76,7 @@
 		"SubnetB": {
 			"Type": "AWS::EC2::Subnet",
 			"Properties": {
-				"AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"}, "b"]]},
+				"AvailabilityZone": {"Fn::Select": ["1", {"Fn::GetAZs": ""}]},
 				"CidrBlock": "172.31.37.0/24",
 				"VpcId": {"Ref": "VPC"}
 			}
@@ -172,7 +172,7 @@
 				},
 				"SecurityGroups": [{"Ref": "LoadBalancerSecurityGroup"}],
 				"Scheme": "internet-facing",
-				"CrossZone": true
+				"CrossZone": "true"
 			}
 		},
 		"LoadBalancerSecurityGroup": {
@@ -342,7 +342,6 @@
 				}
 			},
 			"Properties": {
-				"EbsOptimized": false,
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"SecurityGroups": [{"Ref": "WebServerSecurityGroup"}],
@@ -364,6 +363,9 @@
 				"MinSize": "2",
 				"MaxSize": "4",
 				"DesiredCapacity": "2",
+				"Cooldown": "60",
+				"HealthCheckGracePeriod": "120",
+				"HealthCheckType": "ELB",
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}]
 			},
 			"CreationPolicy": {
@@ -377,7 +379,7 @@
 			"Properties": {
 				"AdjustmentType": "ChangeInCapacity",
 				"AutoScalingGroupName": {"Ref": "AutoScalingGroup"},
-				"Cooldown": "1",
+				"Cooldown": "60",
 				"ScalingAdjustment": "1"
 			}
 		},
@@ -404,7 +406,7 @@
 			"Properties": {
 				"AdjustmentType": "ChangeInCapacity",
 				"AutoScalingGroupName": {"Ref": "AutoScalingGroup"},
-				"Cooldown": "30",
+				"Cooldown": "60",
 				"ScalingAdjustment": "-1"
 			}
 		},
@@ -432,19 +434,23 @@
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
-				"SecurityGroupIds": [{"Ref": "LoadTestSecurityGroup"}],
-				"SubnetId": {"Ref": "SubnetA"},
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
 					"#!/bin/bash\n",
 					" yum install -y httpd-tools\n",
-					"ab -n 10000 -c 2 http://", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]} ,"/wordpress/\n",
+					"ab -n 10000 -c 2 http://", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]} ,"/wordpress/\n"
 				]]}},
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "jenkins-recovery"
+						"Value": "wordpress-loadtest"
 					}
-				]
+				],
+				"NetworkInterfaces": [{
+					"AssociatePublicIpAddress": "true",
+					"DeviceIndex": "0",
+					"GroupSet": [{"Ref": "LoadTestSecurityGroup"}],
+					"SubnetId": {"Ref": "SubnetA"}
+				}]
 			}
 		}
 	},

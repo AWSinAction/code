@@ -172,7 +172,7 @@
 				},
 				"SecurityGroups": [{"Ref": "LoadBalancerSecurityGroup"}],
 				"Scheme": "internet-facing",
-				"CrossZone": true
+				"CrossZone": "true"
 			}
 		},
 		"LoadBalancerSecurityGroup": {
@@ -329,7 +329,6 @@
 				}
 			},
 			"Properties": {
-				"EbsOptimized": false,
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"SecurityGroups": [{"Ref": "WebServerSecurityGroup"}],
@@ -351,6 +350,9 @@
 				"MinSize": "2",
 				"MaxSize": "4",
 				"DesiredCapacity": "2",
+				"Cooldown": "60",
+				"HealthCheckGracePeriod": "120",
+				"HealthCheckType": "ELB",
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}]
 			},
 			"CreationPolicy": {
@@ -364,7 +366,7 @@
 			"Properties": {
 				"AdjustmentType": "ChangeInCapacity",
 				"AutoScalingGroupName": {"Ref": "AutoScalingGroup"},
-				"Cooldown": "1",
+				"Cooldown": "60",
 				"ScalingAdjustment": "1"
 			}
 		},
@@ -391,7 +393,7 @@
 			"Properties": {
 				"AdjustmentType": "ChangeInCapacity",
 				"AutoScalingGroupName": {"Ref": "AutoScalingGroup"},
-				"Cooldown": "30",
+				"Cooldown": "60",
 				"ScalingAdjustment": "-1"
 			}
 		},
