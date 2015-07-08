@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "aws-sdk": "2.1.37",
+    "express": "4.13.1"
+  },
+  "private": true
+}
