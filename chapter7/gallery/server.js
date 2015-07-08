@@ -55,9 +55,9 @@ function uploadImage(image, response) {
 		}
 	});
 }
- 
+
 app.get('/', function (request, response) {
-  listImages(response);
+	listImages(response);
 });
 
 app.post('/upload', function (request, response) {
@@ -66,13 +66,8 @@ app.post('/upload', function (request, response) {
 		uploadImage(part, response);
 	});
 	form.parse(request);
-})
+});
  
 app.listen(8080);
 
-console.log("Server started. " +
-	"Open http://localhost:8080 with browser.")
-
-
-
-
+console.log("Server started. Open http://localhost:8080 with browser.");
