@@ -10,7 +10,7 @@
   },
   "Mappings": {
     "EC2RegionMap": {
-      "ap-northeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-cbf90ecb"},
+      "ap-northeast-1": {"AmazonLinuxAMIHVMInstSBacked64bit": "ami-cbf90ecb"},
       "ap-southeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-68d8e93a"},
       "ap-southeast-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-fd9cecc7"},
       "eu-central-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-a8221fb5"},
@@ -28,9 +28,6 @@
         "AttributeDefinitions": [{
           "AttributeName": "id",
           "AttributeType": "S"
-        }, {
-          "AttributeName": "created",
-          "AttributeType": "N"
         }],
         "KeySchema": [{
           "AttributeName": "id",
@@ -41,6 +38,234 @@
           "WriteCapacityUnits": 1
         },
         "TableName": "image"
+      }
+    },
+    "SQSDLQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "message-dlq"
+      }
+    },
+    "SQSQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "message",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {"Fn::GetAtt": ["SQSDLQueue", "Arn"]},
+          "maxReceiveCount": 10
+        }
+      }
+    },
+    "WorkerInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [{"Ref": "WorkerRole"}]
+      }
+    },
+    "WorkerRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": ["ec2.amazonaws.com"]
+            },
+            "Action": ["sts:AssumeRole"]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "sqs",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Sid": "Stmt1425388787000",
+                "Effect": "Allow",
+                "Action": [
+                  "sqs:ChangeMessageVisibility",
+                  "sqs:DeleteMessage",
+                  "sqs:ReceiveMessage",
+                  "sqs:SendMessage"
+                ],
+                "Resource": {"Fn::GetAtt": ["SQSQueue", "Arn"]}
+            }]
+          }
+        }, {
+          "PolicyName": "cloudwatch",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Sid": "Stmt1425388787000",
+                "Effect": "Allow",
+                "Action": [
+                  "cloudwatch:PutMetricData"
+                ],
+                "Resource": "*"
+            }]
+          }
+        }, {
+          "PolicyName": "s3",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Sid": "Stmt1425388787000",
+                "Effect": "Allow",
+                "Action": [
+                  "s3:Get*",
+                  "s3:List*",
+                  "s3:PutObject"
+                ],
+                "Resource": [
+                  {"Fn::Join": ["", ["arn:aws:s3:::elasticbeanstalk-*-", {"Ref": "AWS::AccountId"}, "/*"]]},
+                  {"Fn::Join": ["", ["arn:aws:s3:::elasticbeanstalk-*-", {"Ref": "AWS::AccountId"}, "-*/*"]]}
+                ]
+            }]
+          }
+        }, {
+          "PolicyName": "dynamodb",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Sid": "Stmt1425388787000",
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:GetItem",
+                  "dynamodb:PutItem",
+                  "dynamodb:UpdateItem"
+                ],
+                "Resource": {"Fn::Join": ["", ["arn:aws:dynamodb:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":table/", {"Ref": "Table"}]]}
+            }]
+          }
+        }]
+      }
+    },
+    "EBWorkerEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {"Ref": "EBWorkerApplication"},
+        "Description": "Image worker: AWS in Action: chapter 13",
+        "SolutionStackName": "64bit Amazon Linux 2015.03 v1.4.4 running Node.js",
+        "OptionSettings": [{
+          "Namespace": "aws:autoscaling:launchconfiguration",
+          "OptionName": "EC2KeyName",
+          "Value": {"Ref": "KeyName"}
+        }, {
+          "Namespace": "aws:autoscaling:launchconfiguration",
+          "OptionName": "IamInstanceProfile",
+          "Value": {"Ref": "WorkerInstanceProfile"}
+        }, {
+          "Namespace": "aws:elasticbeanstalk:sqsd",
+          "OptionName": "WorkerQueueURL",
+          "Value": {"Ref": "SQSQueue"}
+        }, {
+          "Namespace": "aws:elasticbeanstalk:sqsd",
+          "OptionName": "HttpPath",
+          "Value": "/sqs"
+        }, {
+          "Namespace": "aws:elasticbeanstalk:container:nodejs",
+          "OptionName": "NodeCommand",
+          "Value": "worker.js"
+        }],
+        "Tier": {
+          "Type": "SQS/HTTP",
+          "Name": "Worker",
+          "Version": "1.0"
+        }
+      }
+    },
+    "EBWorkerApplication": {
+      "Type": "AWS::ElasticBeanstalk::Application",
+      "Properties": {
+        "ApplicationName": "image-worker",
+        "Description": "Image worker: AWS in Action: chapter 13"
+      }
+    },
+    "ServerInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [{"Ref": "ServerRole"}]
+      }
+    },
+    "ServerRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": ["ec2.amazonaws.com"]
+            },
+            "Action": ["sts:AssumeRole"]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "s3",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Sid": "Stmt1425388787000",
+                "Effect": "Allow",
+                "Action": [
+                  "s3:Get*",
+                  "s3:List*",
+                  "s3:PutObject"
+                ],
+                "Resource": [
+                  {"Fn::Join": ["", ["arn:aws:s3:::elasticbeanstalk-*-", {"Ref": "AWS::AccountId"}, "/*"]]},
+                  {"Fn::Join": ["", ["arn:aws:s3:::elasticbeanstalk-*-", {"Ref": "AWS::AccountId"}, "-*/*"]]}
+                ]
+            }]
+          }
+        }, {
+          "PolicyName": "dynamodb",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Sid": "Stmt1425388787000",
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:GetItem",
+                  "dynamodb:PutItem",
+                  "dynamodb:UpdateItem"
+                ],
+                "Resource": {"Fn::Join": ["", ["arn:aws:dynamodb:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":table/", {"Ref": "Table"}]]}
+            }]
+          }
+        }]
+      }
+    },
+    "EBServerEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {"Ref": "EBServerApplication"},
+        "Description": "Image server: AWS in Action: chapter 13",
+        "SolutionStackName": "64bit Amazon Linux 2015.03 v1.4.4 running Node.js",
+        "OptionSettings": [{
+          "Namespace": "aws:autoscaling:launchconfiguration",
+          "OptionName": "EC2KeyName",
+          "Value": {"Ref": "KeyName"}
+        }, {
+          "Namespace": "aws:autoscaling:launchconfiguration",
+          "OptionName": "IamInstanceProfile",
+          "Value": {"Ref": "ServerInstanceProfile"}
+        }, {
+          "Namespace": "aws:elasticbeanstalk:container:nodejs",
+          "OptionName": "NodeCommand",
+          "Value": "server.js"
+        }]
+      }
+    },
+    "EBServerApplication": {
+      "Type": "AWS::ElasticBeanstalk::Application",
+      "Properties": {
+        "ApplicationName": "image-server",
+        "Description": "Image server: AWS in Action: chapter 13"
       }
     }
   },

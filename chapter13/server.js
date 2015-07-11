@@ -1,19 +1,15 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var AWS = require('aws-sdk');
-var fsm = require('./fsm.js');
+var uuid = require('node-uuid');
+
+var lib = require('./lib.js');
 
 var db = new AWS.DynamoDB({
   "region": "us-east-1"
 });
 var app = express();
-
-function mapImage(item) {
-  return {
-    "id": item.id.S,
-    "version": parseInt(item.version.N, 10),
-    "state": item.state.S
-  };
-}
+app.use(bodyParser.json());
 
 function getImage(id, cb) {
   var params = {
@@ -22,20 +18,24 @@ function getImage(id, cb) {
         "S": id
       }
     },
-    "TableName": "image" // TODO table name?
+    "TableName": "image"
   };
   db.getItem(params, function(err, data) {
     if (err) {
       cb(err);
     } else {
       if (data.Item) {
-        cb(null, mapImage(data.Item));
+        cb(null, lib.mapImage(data.Item));
       } else {
         cb(new Error("image not found"));
       }
     }
   });
 }
+
+app.get('/', function(request, response) {
+  response.json({});
+});
 
 app.post('/image', function(request, response) {
   var id = uuid.v4();
@@ -67,32 +67,16 @@ app.post('/image', function(request, response) {
   });
 });
 
-app.put('/image/:id/uploaded', function(request, response) {
-
-});
-
-app.put('/image/:id/processed', function(request, response) {
-
-});
-
-app.put('/image/:id/shared', function(request, response) {
-
-});
-
-app.put('/image/:id/done', function(request, response) {
-
-});
-
-app.put('/image/:id/failed', function(request, response) {
-
-});
-
 app.get('/image/:id', function(request, response) {
   getImage(request.params.id, function(err, image) {
     if (err) {
       throw err;
     } else {
-      response.end(image);
+      response.json(image);
     }
   });
+});
+
+app.listen(8080, function() {
+  console.log("Server started. Open http://localhost:8080 with browser.");
 });
