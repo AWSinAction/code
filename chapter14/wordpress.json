@@ -254,7 +254,7 @@
 					"PolicyName" : "UploadToS3",
 					"PolicyDocument" : {
 						"Version": "2012-10-17",
-						"Statement" : [ {
+						"Statement" : [{
 							"Effect" : "Allow",
 							"Action" : [ "s3:*" ],
 							"Resource" : [
@@ -353,7 +353,14 @@
 				"Cooldown": "60",
 				"HealthCheckGracePeriod": "120",
 				"HealthCheckType": "ELB",
-				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}]
+				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
+				"Tags": [{
+					"ResourceType": "auto-scaling-group",
+					"ResourceId": "wordpress",
+					"PropagateAtLaunch": true,
+					"Value": "wordpress",
+					"Key": "Name"
+				}]
 			},
 			"CreationPolicy": {
 				"ResourceSignal": {
