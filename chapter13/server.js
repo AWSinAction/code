@@ -77,6 +77,6 @@ app.get('/image/:id', function(request, response) {
   });
 });
 
-app.listen(8080, function() {
+app.listen(process.env.PORT || 8080, function() {
   console.log("Server started. Open http://localhost:8080 with browser.");
 });

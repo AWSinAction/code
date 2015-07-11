@@ -183,6 +183,17 @@
         "Description": "Image worker: AWS in Action: chapter 13"
       }
     },
+    "EBWorkerApplicationVersion": {
+      "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
+      "Properties": {
+        "ApplicationName": {"Ref": "EBWorkerApplication"},
+        "Description": "Image worker: AWS in Action: chapter 13",
+        "SourceBundle": {
+          "S3Bucket": "awsinaction",
+          "S3Key": "chapter13/build/worker.zip"
+        }
+      }
+    },
     "ServerInstanceProfile": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
@@ -205,6 +216,19 @@
         },
         "Path": "/",
         "Policies": [{
+          "PolicyName": "cloudwatch",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Sid": "Stmt1425388787000",
+                "Effect": "Allow",
+                "Action": [
+                  "cloudwatch:PutMetricData"
+                ],
+                "Resource": "*"
+            }]
+          }
+        }, {
           "PolicyName": "s3",
           "PolicyDocument": {
             "Version": "2012-10-17",
@@ -266,6 +290,17 @@
       "Properties": {
         "ApplicationName": "image-server",
         "Description": "Image server: AWS in Action: chapter 13"
+      }
+    },
+    "EBServerApplicationVersion": {
+      "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
+      "Properties": {
+        "ApplicationName": {"Ref": "EBServerApplication"},
+        "Description": "Image server: AWS in Action: chapter 13",
+        "SourceBundle": {
+          "S3Bucket": "awsinaction",
+          "S3Key": "chapter13/build/server.zip"
+        }
       }
     }
   },

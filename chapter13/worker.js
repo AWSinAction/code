@@ -256,6 +256,6 @@ function failed(image, request, response) {
   db.updateItem(params, wrapUpdateItemCallback(response));
 }
 
-app.listen(8080, function() {
+app.listen(process.env.PORT || 8080, function() {
   console.log("Worker started. Open http://localhost:8080 with browser.");
 });
