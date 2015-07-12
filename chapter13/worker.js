@@ -2,12 +2,18 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var AWS = require('aws-sdk');
 var assert = require('assert-plus');
+var Caman = require('caman').Caman;
+var fs = require('fs');
 
 var lib = require('./lib.js');
 
 var db = new AWS.DynamoDB({
   "region": "us-east-1"
 });
+var s3 = new AWS.S3({
+  "region": "us-east-1"
+});
+
 var app = express();
 app.use(bodyParser.json());
 
@@ -47,6 +53,7 @@ app.get('/', function(request, response) {
   response.json({});
 });
 
+
 app.post('/sqs', function(request, response) {
   assert.string(request.body.imageId, "imageId");
   assert.string(request.body.desiredState, "desiredState");
@@ -55,14 +62,22 @@ app.post('/sqs', function(request, response) {
     if (err) {
       throw err;
     } else {
-      if (global[request.body.desiredState] === 'function') {
-        global[request.body.desiredState](image, request, response);
+      if (typeof states[request.body.desiredState] === 'function') {
+        states[request.body.desiredState](image, request, response);
       } else {
         throw new Error("unsupported desiredState");
       }
     }
   });
 });
+
+var states = {
+  "uploaded": uploaded,
+  "processed": processed,
+  "shared": shared,
+  "done": done,
+  "failed": failed
+};
 
 function uploaded(image, request, response) {
   assert.string(request.body.s3Key, "s3Key");
@@ -103,43 +118,101 @@ function uploaded(image, request, response) {
   db.updateItem(params, wrapUpdateItemCallback(response));
 }
 
+function processImage(image, cb) {
+  var processedS3Key = 'processed/' + image.id + '-' + Date.now() + '.png';
+  var rawFile = './tmp_raw_' + image.id;
+  var processedFile = './tmp_processed_' + image.id;
+  s3.getObject({
+    "Bucket": process.env.ImageBucket,
+    "Key": image.rawS3Key
+  }, function(err, data) {
+    if (err) {
+      cb(err);
+    } else {
+      fs.writeFile(rawFile, data.Body, {"encoding": null}, function(err) {
+        if (err) {
+          cb(err);
+        } else {
+          Caman(rawFile, function () {
+            this.brightness(10);
+            this.contrast(30);
+            this.sepia(60);
+            this.saturation(-30);
+            this.render(function() {
+              this.save(processedFile);
+              fs.unlink(rawFile, function() {
+                fs.readFile(processedFile, {"encoding": null}, function(err, buf) {
+                  if (err) {
+                    cb(err);
+                  } else {
+                    s3.putObject({
+                      "Bucket": process.env.ImageBucket,
+                      "Key": processedS3Key,
+                      "ACL": "public-read",
+                      "Body": buf,
+                      "ContentType": "image/png"
+                    }, function(err) {
+                      if (err) {
+                        cb(err);
+                      } else {
+                        fs.unlink(processedFile, function() {
+                          cb(null, processedS3Key);
+                        });
+                      }
+                    });
+                  }
+                });
+              });
+            });
+          });
+        }
+      });
+    }
+  });
+}
+
 function processed(image, request, response) {
-  assert.string(request.body.s3Key, "s3Key");
-  var params = {
-    "Key": {
-      "id": {
-        "S": image.id
-      }
-    },
-    "UpdateExpression": "SET #s=:newState, version=:newVersion, processedS3Key=:processedS3Key",
-    "ConditionExpression": "attribute_exists(id) AND version=:oldVersion AND #s IN (:stateUploaded, :stateProcessed)",
-    "ExpressionAttributeNames": {
-      "#s": "state"
-    },
-    "ExpressionAttributeValues": {
-      ":newState": {
-        "S": "processed"
-      },
-      ":oldVersion": {
-        "N": image.version.toString()
-      },
-      ":newVersion": {
-        "N": (image.version + 1).toString()
-      },
-      ":processedS3Key": {
-        "S": request.body.s3Key
-      },
-      ":stateUploaded": {
-        "S": "uploaded"
-      },
-      ":stateProcessed": {
-        "S": "processed"
-      }
-    },
-    "ReturnValues": "ALL_NEW",
-    "TableName": "image"
-  };
-  db.updateItem(params, wrapUpdateItemCallback(response));
+  processImage(image, function(err, processedS3Key) {
+    if (err) {
+      throw err;
+    } else {
+      var params = {
+        "Key": {
+          "id": {
+            "S": image.id
+          }
+        },
+        "UpdateExpression": "SET #s=:newState, version=:newVersion, processedS3Key=:processedS3Key",
+        "ConditionExpression": "attribute_exists(id) AND version=:oldVersion AND #s IN (:stateUploaded, :stateProcessed)",
+        "ExpressionAttributeNames": {
+          "#s": "state"
+        },
+        "ExpressionAttributeValues": {
+          ":newState": {
+            "S": "processed"
+          },
+          ":oldVersion": {
+            "N": image.version.toString()
+          },
+          ":newVersion": {
+            "N": (image.version + 1).toString()
+          },
+          ":processedS3Key": {
+            "S": processedS3Key
+          },
+          ":stateUploaded": {
+            "S": "uploaded"
+          },
+          ":stateProcessed": {
+            "S": "processed"
+          }
+        },
+        "ReturnValues": "ALL_NEW",
+        "TableName": "image"
+      };
+      db.updateItem(params, wrapUpdateItemCallback(response));
+    }
+  });
 }
 
 function shared(image, request, response) {

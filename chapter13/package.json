@@ -4,7 +4,8 @@
     "express": "4.13.1",
     "body-parser": "1.13.2",
     "node-uuid": "1.4.3",
-    "assert-plus": "0.1.5"
+    "assert-plus": "0.1.5",
+    "caman": "4.1.2"
   },
   "private": true
 }
