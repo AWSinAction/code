@@ -247,6 +247,19 @@
         },
         "Path": "/",
         "Policies": [{
+          "PolicyName": "sqs",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Sid": "Stmt1425388787000",
+                "Effect": "Allow",
+                "Action": [
+                  "sqs:SendMessage"
+                ],
+                "Resource": {"Fn::GetAtt": ["SQSQueue", "Arn"]}
+            }]
+          }
+        }, {
           "PolicyName": "cloudwatch",
           "PolicyDocument": {
             "Version": "2012-10-17",
@@ -260,7 +273,7 @@
             }]
           }
         }, {
-          "PolicyName": "s3",
+          "PolicyName": "s3-elasticbeanstalk",
           "PolicyDocument": {
             "Version": "2012-10-17",
             "Statement": [{
@@ -274,6 +287,22 @@
                 "Resource": [
                   {"Fn::Join": ["", ["arn:aws:s3:::elasticbeanstalk-*-", {"Ref": "AWS::AccountId"}, "/*"]]},
                   {"Fn::Join": ["", ["arn:aws:s3:::elasticbeanstalk-*-", {"Ref": "AWS::AccountId"}, "-*/*"]]}
+                ]
+            }]
+          }
+        }, {
+          "PolicyName": "s3-image",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Sid": "Stmt1425388787000",
+                "Effect": "Allow",
+                "Action": [
+                  "s3:PutObject"
+                ],
+                "Resource": [
+                  {"Fn::Join": ["", ["arn:aws:s3:::", {"Ref": "Bucket"}]]},
+                  {"Fn::Join": ["", ["arn:aws:s3:::", {"Ref": "Bucket"}, "/*"]]}
                 ]
             }]
           }
@@ -313,6 +342,18 @@
           "Namespace": "aws:elasticbeanstalk:container:nodejs",
           "OptionName": "NodeCommand",
           "Value": "node server.js"
+        }, {
+          "Namespace": "aws:elasticbeanstalk:application:environment",
+          "OptionName": "ImageQueue",
+          "Value": {"Ref": "SQSQueue"}
+        }, {
+          "Namespace": "aws:elasticbeanstalk:application:environment",
+          "OptionName": "ImageBucket",
+          "Value": {"Ref": "Bucket"}
+        }, {
+          "Namespace": "aws:elasticbeanstalk:container:nodejs:staticfiles",
+          "OptionName": "/public",
+          "Value": "/public"
         }]
       }
     },

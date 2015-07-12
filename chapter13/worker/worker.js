@@ -57,7 +57,6 @@ app.get('/', function(request, response) {
 app.post('/sqs', function(request, response) {
   assert.string(request.body.imageId, "imageId");
   assert.string(request.body.desiredState, "desiredState");
-  console.log("request.body", request.body);
   getImage(request.body.imageId, function(err, image) {
     if (err) {
       throw err;
