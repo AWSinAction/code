@@ -10,6 +10,9 @@ var lib = require('./lib.js');
 var db = new AWS.DynamoDB({
   "region": "us-east-1"
 });
+var sqs = new AWS.SQS({
+  "region": "us-east-1"
+});
 var s3 = new AWS.S3({
   "region": "us-east-1"
 });
@@ -39,20 +42,9 @@ function getImage(id, cb) {
   });
 }
 
-function wrapUpdateItemCallback(response) {
-  return function(err, data) {
-    if (err) {
-       throw err;
-    } else {
-      response.json(lib.mapImage(data.Attributes));
-     }
-  };
-}
-
 app.get('/', function(request, response) {
   response.json({});
 });
-
 
 app.post('/sqs', function(request, response) {
   assert.string(request.body.imageId, "imageId");
@@ -72,10 +64,7 @@ app.post('/sqs', function(request, response) {
 
 var states = {
   "uploaded": uploaded,
-  "processed": processed,
-  "shared": shared,
-  "done": done,
-  "failed": failed
+  "processed": processed
 };
 
 function uploaded(image, request, response) {
@@ -114,7 +103,22 @@ function uploaded(image, request, response) {
     "ReturnValues": "ALL_NEW",
     "TableName": "image"
   };
-  db.updateItem(params, wrapUpdateItemCallback(response));
+  db.updateItem(params, function(err, data) {
+    if (err) {
+       throw err;
+    } else {
+      sqs.sendMessage({
+        "MessageBody": JSON.stringify({"imageId": image.id, "desiredState": "processed"}),
+        "QueueUrl": process.env.ImageQueue,
+      }, function(err) {
+        if (err) {
+          throw err;
+        } else {
+          response.json(lib.mapImage(data.Attributes));
+        }
+      });
+    }
+  });
 }
 
 function processImage(image, cb) {
@@ -151,6 +155,7 @@ function processImage(image, cb) {
                       "Body": buf,
                       "ContentType": "image/png"
                     }, function(err) {
+                      console.log("s3.putObject", err); // TODO debug only
                       if (err) {
                         cb(err);
                       } else {
@@ -209,127 +214,15 @@ function processed(image, request, response) {
         "ReturnValues": "ALL_NEW",
         "TableName": "image"
       };
-      db.updateItem(params, wrapUpdateItemCallback(response));
+      db.updateItem(params, function(err, data) {
+        if (err) {
+          throw err;
+        } else {
+          response.json(lib.mapImage(data.Attributes));
+        }
+      });
     }
   });
-}
-
-function shared(image, request, response) {
-  var params = {
-    "Key": {
-      "id": {
-        "S": image.id
-      }
-    },
-    "UpdateExpression": "SET #s=:newState, version=:newVersion",
-    "ConditionExpression": "attribute_exists(id) AND version=:oldVersion AND #s IN (:stateProcessed, :stateShared)",
-    "ExpressionAttributeNames": {
-      "#s": "state"
-    },
-    "ExpressionAttributeValues": {
-      ":newState": {
-        "S": "shared"
-      },
-      ":oldVersion": {
-        "N": image.version.toString()
-      },
-      ":newVersion": {
-        "N": (image.version + 1).toString()
-      },
-      ":stateProcessed": {
-        "S": "processed"
-      },
-      ":stateShared": {
-        "S": "shared"
-      }
-    },
-    "ReturnValues": "ALL_NEW",
-    "TableName": "image"
-  };
-  db.updateItem(params, wrapUpdateItemCallback(response));
-}
-
-function done(image, request, response) {
-  var params = {
-    "Key": {
-      "id": {
-        "S": image.id
-      }
-    },
-    "UpdateExpression": "SET #s=:newState, version=:newVersion",
-    "ConditionExpression": "attribute_exists(id) AND version=:oldVersion AND #s IN (:stateShared, :stateDone)",
-    "ExpressionAttributeNames": {
-      "#s": "state"
-    },
-    "ExpressionAttributeValues": {
-      ":newState": {
-        "S": "done"
-      },
-      ":oldVersion": {
-        "N": image.version.toString()
-      },
-      ":newVersion": {
-        "N": (image.version + 1).toString()
-      },
-      ":stateShared": {
-        "S": "shared"
-      },
-      ":stateDone": {
-        "S": "done"
-      }
-    },
-    "ReturnValues": "ALL_NEW",
-    "TableName": "image"
-  };
-  db.updateItem(params, wrapUpdateItemCallback(response));
-}
-
-function failed(image, request, response) {
-  assert.string(request.body.failure, "failure");
-  var params = {
-    "Key": {
-      "id": {
-        "S": image.id
-      }
-    },
-    "UpdateExpression": "SET #s=:newState, version=:newVersion, failure=:failure",
-    "ConditionExpression": "attribute_exists(id) AND version=:oldVersion AND #s IN (:stateCreated, :stateUploaded, :stateProcessed, :stateShared, :stateFailed)",
-    "ExpressionAttributeNames": {
-      "#s": "state"
-    },
-    "ExpressionAttributeValues": {
-      ":newState": {
-        "S": "failed"
-      },
-      ":oldVersion": {
-        "N": image.version.toString()
-      },
-      ":newVersion": {
-        "N": (image.version + 1).toString()
-      },
-      ":failure": {
-        "S": request.body.failure
-      },
-      ":stateCreated": {
-        "S": "created"
-      },
-      ":stateUploaded": {
-        "S": "uploaded"
-      },
-      ":stateProcessed": {
-        "S": "processed"
-      },
-      ":stateShared": {
-        "S": "shared"
-      },
-      ":stateFailed": {
-        "S": "failed"
-      }
-    },
-    "ReturnValues": "ALL_NEW",
-    "TableName": "image"
-  };
-  db.updateItem(params, wrapUpdateItemCallback(response));
 }
 
 app.listen(process.env.PORT || 8080, function() {

@@ -7,7 +7,9 @@ $(function() {
     $('#' + id).show();
   }
   function updateImage(image) {
+    document.title = 'Image | #' + image.id;
     $('#upload form').attr("action", "/image/" + image.id + "/upload");
+    $('#upload blockquote').html("state " + image.state);
     $('#view img').attr("src", image.processedImage);
     $('#view blockquote').html("state " + image.state);
   }
@@ -48,7 +50,7 @@ $(function() {
       });
     return false;
   });
-  $('#view a').click(function() {
+  $('#view a.refresh').click(function() {
     $.get('/image/' + hash[1], function(data) {
         updateImage(data);
       })

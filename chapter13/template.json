@@ -143,10 +143,10 @@
                 "Effect": "Allow",
                 "Action": [
                   "s3:GetObject",
-                  "s3:PutObject"
+                  "s3:PutObject",
+                  "s3:PutObjectAcl"
                 ],
                 "Resource": [
-                  {"Fn::Join": ["", ["arn:aws:s3:::", {"Ref": "Bucket"}]]},
                   {"Fn::Join": ["", ["arn:aws:s3:::", {"Ref": "Bucket"}, "/*"]]}
                 ]
             }]
@@ -195,6 +195,10 @@
           "Namespace": "aws:elasticbeanstalk:container:nodejs",
           "OptionName": "NodeCommand",
           "Value": "node worker.js"
+        }, {
+          "Namespace": "aws:elasticbeanstalk:application:environment",
+          "OptionName": "ImageQueue",
+          "Value": {"Ref": "SQSQueue"}
         }, {
           "Namespace": "aws:elasticbeanstalk:application:environment",
           "OptionName": "ImageBucket",
@@ -301,7 +305,6 @@
                   "s3:PutObject"
                 ],
                 "Resource": [
-                  {"Fn::Join": ["", ["arn:aws:s3:::", {"Ref": "Bucket"}]]},
                   {"Fn::Join": ["", ["arn:aws:s3:::", {"Ref": "Bucket"}, "/*"]]}
                 ]
             }]
@@ -377,5 +380,9 @@
     }
   },
   "Outputs": {
+    "EndpointURL": {
+      "Value": {"Fn::GetAtt": ["EBServerEnvironment", "EndpointURL"]},
+      "Description": "Load Balancer URL"
+    }
   }
 }

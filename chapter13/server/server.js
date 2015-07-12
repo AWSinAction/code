@@ -93,7 +93,7 @@ app.post('/image', function(request, response) {
     if (err) {
       throw err;
     } else {
-      response.json({"id": id});
+      response.json({"id": id, "state": "created"});
     }
   });
 });
