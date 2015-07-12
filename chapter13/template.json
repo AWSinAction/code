@@ -167,7 +167,7 @@
         }, {
           "Namespace": "aws:elasticbeanstalk:container:nodejs",
           "OptionName": "NodeCommand",
-          "Value": "worker.js"
+          "Value": "node worker.js"
         }],
         "Tier": {
           "Type": "SQS/HTTP",
@@ -281,7 +281,7 @@
         }, {
           "Namespace": "aws:elasticbeanstalk:container:nodejs",
           "OptionName": "NodeCommand",
-          "Value": "server.js"
+          "Value": "node server.js"
         }]
       }
     },
