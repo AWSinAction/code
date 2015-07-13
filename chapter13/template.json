@@ -169,8 +169,8 @@
         }]
       }
     },
-    "EBWorkerEnvironment": {
-      "Type": "AWS::ElasticBeanstalk::Environment",
+    "EBWorkerConfigurationTemplate": {
+      "Type": "AWS::ElasticBeanstalk::ConfigurationTemplate",
       "Properties": {
         "ApplicationName": {"Ref": "EBWorkerApplication"},
         "Description": "Image worker: AWS in Action: chapter 13",
@@ -203,7 +203,16 @@
           "Namespace": "aws:elasticbeanstalk:application:environment",
           "OptionName": "ImageBucket",
           "Value": {"Ref": "Bucket"}
-        }],
+        }]
+      }
+    },
+    "EBWorkerEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {"Ref": "EBWorkerApplication"},
+        "Description": "Image worker: AWS in Action: chapter 13",
+        "TemplateName": {"Ref": "EBWorkerConfigurationTemplate"},
+        "VersionLabel": {"Ref": "EBWorkerApplicationVersion"},
         "Tier": {
           "Type": "SQS/HTTP",
           "Name": "Worker",
@@ -327,13 +336,17 @@
         }]
       }
     },
-    "EBServerEnvironment": {
-      "Type": "AWS::ElasticBeanstalk::Environment",
+    "EBServerConfigurationTemplate": {
+      "Type": "AWS::ElasticBeanstalk::ConfigurationTemplate",
       "Properties": {
         "ApplicationName": {"Ref": "EBServerApplication"},
         "Description": "Image server: AWS in Action: chapter 13",
         "SolutionStackName": "64bit Amazon Linux 2015.03 v1.4.4 running Node.js",
         "OptionSettings": [{
+          "Namespace": "aws:autoscaling:asg",
+          "OptionName": "MinSize",
+          "Value": "2"
+        }, {
           "Namespace": "aws:autoscaling:launchconfiguration",
           "OptionName": "EC2KeyName",
           "Value": {"Ref": "KeyName"}
@@ -358,6 +371,15 @@
           "OptionName": "/public",
           "Value": "/public"
         }]
+      }
+    },
+    "EBServerEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {"Ref": "EBServerApplication"},
+        "Description": "Image server: AWS in Action: chapter 13",
+        "TemplateName": {"Ref": "EBServerConfigurationTemplate"},
+        "VersionLabel": {"Ref": "EBServerApplicationVersion"}
       }
     },
     "EBServerApplication": {
