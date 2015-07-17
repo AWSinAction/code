@@ -25,7 +25,7 @@
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": {"Fn::Join": ["-", ["image", {"Ref": "AWS::AccountId"}]]},
+        "BucketName": {"Fn::Join": ["-", ["imagery", {"Ref": "AWS::AccountId"}]]},
         "WebsiteConfiguration": {
           "ErrorDocument": "error.html",
           "IndexDocument": "index.html"
@@ -47,7 +47,7 @@
           "ReadCapacityUnits": 1,
           "WriteCapacityUnits": 1
         },
-        "TableName": "image"
+        "TableName": "imagery-image"
       }
     },
     "SQSDLQueue": {
@@ -173,7 +173,7 @@
       "Type": "AWS::ElasticBeanstalk::ConfigurationTemplate",
       "Properties": {
         "ApplicationName": {"Ref": "EBWorkerApplication"},
-        "Description": "Image worker: AWS in Action: chapter 13",
+        "Description": "Imagery worker: AWS in Action: chapter 13",
         "SolutionStackName": "64bit Amazon Linux 2015.03 v1.4.4 running Node.js",
         "OptionSettings": [{
           "Namespace": "aws:autoscaling:launchconfiguration",
@@ -210,7 +210,7 @@
       "Type": "AWS::ElasticBeanstalk::Environment",
       "Properties": {
         "ApplicationName": {"Ref": "EBWorkerApplication"},
-        "Description": "Image worker: AWS in Action: chapter 13",
+        "Description": "Imagery worker: AWS in Action: chapter 13",
         "TemplateName": {"Ref": "EBWorkerConfigurationTemplate"},
         "VersionLabel": {"Ref": "EBWorkerApplicationVersion"},
         "Tier": {
@@ -223,15 +223,15 @@
     "EBWorkerApplication": {
       "Type": "AWS::ElasticBeanstalk::Application",
       "Properties": {
-        "ApplicationName": "image-worker",
-        "Description": "Image worker: AWS in Action: chapter 13"
+        "ApplicationName": "imagery-worker",
+        "Description": "Imagery worker: AWS in Action: chapter 13"
       }
     },
     "EBWorkerApplicationVersion": {
       "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
       "Properties": {
         "ApplicationName": {"Ref": "EBWorkerApplication"},
-        "Description": "Image worker: AWS in Action: chapter 13",
+        "Description": "Imagery worker: AWS in Action: chapter 13",
         "SourceBundle": {
           "S3Bucket": "awsinaction",
           "S3Key": "chapter13/build/worker.zip"
@@ -340,7 +340,7 @@
       "Type": "AWS::ElasticBeanstalk::ConfigurationTemplate",
       "Properties": {
         "ApplicationName": {"Ref": "EBServerApplication"},
-        "Description": "Image server: AWS in Action: chapter 13",
+        "Description": "Imagery server: AWS in Action: chapter 13",
         "SolutionStackName": "64bit Amazon Linux 2015.03 v1.4.4 running Node.js",
         "OptionSettings": [{
           "Namespace": "aws:autoscaling:asg",
@@ -377,7 +377,7 @@
       "Type": "AWS::ElasticBeanstalk::Environment",
       "Properties": {
         "ApplicationName": {"Ref": "EBServerApplication"},
-        "Description": "Image server: AWS in Action: chapter 13",
+        "Description": "Imagery server: AWS in Action: chapter 13",
         "TemplateName": {"Ref": "EBServerConfigurationTemplate"},
         "VersionLabel": {"Ref": "EBServerApplicationVersion"}
       }
@@ -385,15 +385,15 @@
     "EBServerApplication": {
       "Type": "AWS::ElasticBeanstalk::Application",
       "Properties": {
-        "ApplicationName": "image-server",
-        "Description": "Image server: AWS in Action: chapter 13"
+        "ApplicationName": "imagery-server",
+        "Description": "Imagery server: AWS in Action: chapter 13"
       }
     },
     "EBServerApplicationVersion": {
       "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
       "Properties": {
         "ApplicationName": {"Ref": "EBServerApplication"},
-        "Description": "Image server: AWS in Action: chapter 13",
+        "Description": "Imagery server: AWS in Action: chapter 13",
         "SourceBundle": {
           "S3Bucket": "awsinaction",
           "S3Key": "chapter13/build/server.zip"

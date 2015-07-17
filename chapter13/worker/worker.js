@@ -27,7 +27,7 @@ function getImage(id, cb) {
         "S": id
       }
     },
-    "TableName": "image"
+    "TableName": "imagery-image"
   };
   db.getItem(params, function(err, data) {
     if (err) {
@@ -101,7 +101,7 @@ function uploaded(image, request, response) {
       }
     },
     "ReturnValues": "ALL_NEW",
-    "TableName": "image"
+    "TableName": "imagery-image"
   };
   db.updateItem(params, function(err, data) {
     if (err) {
@@ -212,7 +212,7 @@ function processed(image, request, response) {
           }
         },
         "ReturnValues": "ALL_NEW",
-        "TableName": "image"
+        "TableName": "imagery-image"
       };
       db.updateItem(params, function(err, data) {
         if (err) {

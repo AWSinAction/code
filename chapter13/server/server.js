@@ -27,7 +27,7 @@ function getImage(id, cb) {
         "S": id
       }
     },
-    "TableName": "image"
+    "TableName": "imagery-image"
   };
   db.getItem(params, function(err, data) {
     if (err) {
@@ -86,7 +86,7 @@ app.post('/image', function(request, response) {
         "S": "created"
       }
     },
-    "TableName": "image",
+    "TableName": "imagery-image",
     "ConditionExpression": "attribute_not_exists(id)"
   };
   db.putItem(params, function(err, data) {

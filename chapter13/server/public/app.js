@@ -7,7 +7,7 @@ $(function() {
     $('#' + id).show();
   }
   function updateImage(image) {
-    document.title = 'Image | #' + image.id;
+    document.title = 'Imagery | #' + image.id;
     $('#upload form').attr("action", "/image/" + image.id + "/upload");
     $('#upload blockquote').html("state " + image.state);
     $('#view img').attr("src", image.processedImage);
