@@ -166,5 +166,5 @@ function processed(image, request, response) {
 }
 
 app.listen(process.env.PORT || 8080, function() {
-  console.log("Worker started. Open http://localhost:8080 with browser.");
+  console.log("Worker started on port " + (process.env.PORT || 8080));
 });

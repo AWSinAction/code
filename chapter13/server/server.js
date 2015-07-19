@@ -160,5 +160,5 @@ app.post('/image/:id/upload', function(request, response) {
 });
 
 app.listen(process.env.PORT || 8080, function() {
-  console.log("Server started. Open http://localhost:8080 with browser.");
+  console.log("Server started. Open http://localhost:" + (process.env.PORT || 8080) + " with browser.");
 });
