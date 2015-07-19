@@ -21,15 +21,14 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 function getImage(id, cb) {
-  var params = {
+  db.getItem({
     "Key": {
       "id": {
         "S": id
       }
     },
     "TableName": "imagery-image"
-  };
-  db.getItem(params, function(err, data) {
+  }, function(err, data) {
     if (err) {
       cb(err);
     } else {
@@ -44,25 +43,64 @@ function getImage(id, cb) {
 
 function uploadImage(image, part, response) {
   var rawS3Key = 'upload/' + image.id + '-' + Date.now();
-  var params = {
+  s3.putObject({
     "Bucket": process.env.ImageBucket,
     "Key": rawS3Key,
     "Body": part,
     "ContentLength": part.byteCount
-  };
-  s3.putObject(params, function(err, data) {
+  }, function(err, data) {
     if (err) {
       throw err;
     } else {
-      sqs.sendMessage({
-        "MessageBody": JSON.stringify({"imageId": image.id, "desiredState": "uploaded", "s3Key": rawS3Key}),
-        "QueueUrl": process.env.ImageQueue,
-      }, function(err) {
+      db.updateItem({
+        "Key": {
+          "id": {
+            "S": image.id
+          }
+        },
+        "UpdateExpression": "SET #s=:newState, version=:newVersion, rawS3Key=:rawS3Key",
+        "ConditionExpression": "attribute_exists(id) AND version=:oldVersion AND #s IN (:stateCreated, :stateUploaded)",
+        "ExpressionAttributeNames": {
+          "#s": "state"
+        },
+        "ExpressionAttributeValues": {
+          ":newState": {
+            "S": "uploaded"
+          },
+          ":oldVersion": {
+            "N": image.version.toString()
+          },
+          ":newVersion": {
+            "N": (image.version + 1).toString()
+          },
+          ":rawS3Key": {
+            "S": rawS3Key
+          },
+          ":stateCreated": {
+            "S": "created"
+          },
+          ":stateUploaded": {
+            "S": "uploaded"
+          }
+        },
+        "ReturnValues": "ALL_NEW",
+        "TableName": "imagery-image"
+      }, function(err, data) {
         if (err) {
-          throw err;
+           throw err;
         } else {
-          response.redirect('/#view=' + image.id);
-          response.end();
+          sqs.sendMessage({
+            "MessageBody": JSON.stringify({"imageId": image.id, "desiredState": "processed"}),
+            "QueueUrl": process.env.ImageQueue,
+          }, function(err) {
+            if (err) {
+              throw err;
+            } else {
+              //response.json(lib.mapImage(data.Attributes));
+              response.redirect('/#view=' + image.id);
+              response.end();
+            }
+          });
         }
       });
     }
@@ -71,7 +109,7 @@ function uploadImage(image, part, response) {
 
 app.post('/image', function(request, response) {
   var id = uuid.v4();
-  var params = {
+  db.putItem({
     "Item": {
       "id": {
         "S": id
@@ -88,8 +126,7 @@ app.post('/image', function(request, response) {
     },
     "TableName": "imagery-image",
     "ConditionExpression": "attribute_not_exists(id)"
-  };
-  db.putItem(params, function(err, data) {
+  }, function(err, data) {
     if (err) {
       throw err;
     } else {

@@ -9,7 +9,6 @@ exports.mapImage = function(item) {
     "state": item.state.S,
     "rawS3Key": getOptionalAttribute(item, 'rawS3Key', 'S'),
     "processedS3Key": getOptionalAttribute(item, 'processedS3Key', 'S'),
-    "processedImage": (item.processedS3Key !== undefined) ? ("https://s3.amazonaws.com/" + process.env.ImageBucket + "/" + item.processedS3Key.S) : undefined,
-    "failure": getOptionalAttribute(item, 'failure', 'S')
+    "processedImage": (item.processedS3Key !== undefined) ? ("https://s3.amazonaws.com/" + process.env.ImageBucket + "/" + item.processedS3Key.S) : undefined
   };
 };

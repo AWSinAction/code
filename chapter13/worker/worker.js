@@ -10,9 +10,6 @@ var lib = require('./lib.js');
 var db = new AWS.DynamoDB({
   "region": "us-east-1"
 });
-var sqs = new AWS.SQS({
-  "region": "us-east-1"
-});
 var s3 = new AWS.S3({
   "region": "us-east-1"
 });
@@ -21,15 +18,14 @@ var app = express();
 app.use(bodyParser.json());
 
 function getImage(id, cb) {
-  var params = {
+  db.getItem({
     "Key": {
       "id": {
         "S": id
       }
     },
     "TableName": "imagery-image"
-  };
-  db.getItem(params, function(err, data) {
+  }, function(err, data) {
     if (err) {
       cb(err);
     } else {
@@ -63,63 +59,8 @@ app.post('/sqs', function(request, response) {
 });
 
 var states = {
-  "uploaded": uploaded,
   "processed": processed
 };
-
-function uploaded(image, request, response) {
-  assert.string(request.body.s3Key, "s3Key");
-  var params = {
-    "Key": {
-      "id": {
-        "S": image.id
-      }
-    },
-    "UpdateExpression": "SET #s=:newState, version=:newVersion, rawS3Key=:rawS3Key",
-    "ConditionExpression": "attribute_exists(id) AND version=:oldVersion AND #s IN (:stateCreated, :stateUploaded)",
-    "ExpressionAttributeNames": {
-      "#s": "state"
-    },
-    "ExpressionAttributeValues": {
-      ":newState": {
-        "S": "uploaded"
-      },
-      ":oldVersion": {
-        "N": image.version.toString()
-      },
-      ":newVersion": {
-        "N": (image.version + 1).toString()
-      },
-      ":rawS3Key": {
-        "S": request.body.s3Key
-      },
-      ":stateCreated": {
-        "S": "created"
-      },
-      ":stateUploaded": {
-        "S": "uploaded"
-      }
-    },
-    "ReturnValues": "ALL_NEW",
-    "TableName": "imagery-image"
-  };
-  db.updateItem(params, function(err, data) {
-    if (err) {
-       throw err;
-    } else {
-      sqs.sendMessage({
-        "MessageBody": JSON.stringify({"imageId": image.id, "desiredState": "processed"}),
-        "QueueUrl": process.env.ImageQueue,
-      }, function(err) {
-        if (err) {
-          throw err;
-        } else {
-          response.json(lib.mapImage(data.Attributes));
-        }
-      });
-    }
-  });
-}
 
 function processImage(image, cb) {
   var processedS3Key = 'processed/' + image.id + '-' + Date.now() + '.png';
@@ -180,7 +121,7 @@ function processed(image, request, response) {
     if (err) {
       throw err;
     } else {
-      var params = {
+      db.updateItem({
         "Key": {
           "id": {
             "S": image.id
@@ -213,8 +154,7 @@ function processed(image, request, response) {
         },
         "ReturnValues": "ALL_NEW",
         "TableName": "imagery-image"
-      };
-      db.updateItem(params, function(err, data) {
+      }, function(err, data) {
         if (err) {
           throw err;
         } else {
