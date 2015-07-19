@@ -8,19 +8,6 @@
       "Default": "mykey"
     }
   },
-  "Mappings": {
-    "EC2RegionMap": {
-      "ap-northeast-1": {"AmazonLinuxAMIHVMInstSBacked64bit": "ami-cbf90ecb"},
-      "ap-southeast-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-68d8e93a"},
-      "ap-southeast-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-fd9cecc7"},
-      "eu-central-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-a8221fb5"},
-      "eu-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-a10897d6"},
-      "sa-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-b52890a8"},
-      "us-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-1ecae776"},
-      "us-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-d114f295"},
-      "us-west-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-e7527ed7"}
-    }
-  },
   "Resources": {
     "Bucket": {
       "Type": "AWS::S3::Bucket",
@@ -97,8 +84,7 @@
                 "Action": [
                   "sqs:ChangeMessageVisibility",
                   "sqs:DeleteMessage",
-                  "sqs:ReceiveMessage",
-                  "sqs:SendMessage"
+                  "sqs:ReceiveMessage"
                 ],
                 "Resource": {"Fn::GetAtt": ["SQSQueue", "Arn"]}
             }]
@@ -160,7 +146,6 @@
                 "Effect": "Allow",
                 "Action": [
                   "dynamodb:GetItem",
-                  "dynamodb:PutItem",
                   "dynamodb:UpdateItem"
                 ],
                 "Resource": {"Fn::Join": ["", ["arn:aws:dynamodb:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":table/", {"Ref": "Table"}]]}
