@@ -25,7 +25,8 @@
 		},
 		"VPNPassword": {
 			"Description": "The VPN password.",
-			"Type": "String"
+			"Type": "String",
+			"NoEcho": "true"
 		}
 	},
 	"Mappings": {

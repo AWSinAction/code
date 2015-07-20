@@ -12,7 +12,8 @@
 			"Type": "String",
 			"AllowedPattern" : "[a-zA-Z0-9]*",
 			"MinLength" : "8",
-			"MaxLength" : "42"
+			"MaxLength" : "42",
+			"NoEcho": "true"
 		}
 	},
 	"Mappings": {

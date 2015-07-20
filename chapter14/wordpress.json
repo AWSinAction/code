@@ -25,7 +25,8 @@
 		},
 		"AdminPassword": {
 			"Description": "A unique identifier for your blog.",
-			"Type": "String"
+			"Type": "String",
+			"NoEcho": "true"
 		},
 		"AdminEMail": {
 			"Description": "The email address of the administrator.",
