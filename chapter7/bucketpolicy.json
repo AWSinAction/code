@@ -6,7 +6,7 @@
       "Effect":"Allow",
       "Principal": "*",
       "Action":["s3:GetObject"],
-      "Resource":["arn:aws:s3:::BUCKETNAME/*"]
+      "Resource":["arn:aws:s3:::$BucketName/*"]
     }
   ]
 }
