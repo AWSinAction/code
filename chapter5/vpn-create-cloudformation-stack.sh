@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-vpc=$(aws ec2 describe-vpcs --query Vpcs[0].VpcId --output text)
+vpc=$(aws ec2 describe-vpcs --filter "Name=isDefault, Values=true" --query "Vpcs[0].VpcId" --output text)
 subnet=$(aws ec2 describe-subnets --filters Name=vpc-id,Values=$vpc --query Subnets[0].SubnetId --output text)
 sharedsecret=$(openssl rand -base64 30)
 user=vpn
