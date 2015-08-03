@@ -52,9 +52,48 @@
 				}]
 			}
 		},
+		"IamRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Principal": {
+								"Service": ["ec2.amazonaws.com"]
+							},
+							"Action": ["sts:AssumeRole"]
+						}
+					]
+				},
+				"Path": "/",
+				"Policies": [
+					{
+						"PolicyName": "ec2",
+						"PolicyDocument": {
+							"Version": "2012-10-17",
+							"Statement": [{
+								"Effect" : "Allow",
+								"Action" : ["ec2:DescribeVolumes", "ec2:CreateSnapshot", "ec2:DescribeSnapshots"],
+								"Resource": "*"
+							}]
+						}
+					}
+				]
+			}
+		},
+		"IamInstanceProfile": {
+			"Type": "AWS::IAM::InstanceProfile",
+			"Properties": {
+				"Path": "/",
+				"Roles": [{"Ref": "IamRole"}]
+			}
+		},
 		"Server": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
+				"IamInstanceProfile": {"Ref": "IamInstanceProfile"},
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"InstanceType": "t2.micro",
 				"KeyName": {"Ref": "KeyName"},
