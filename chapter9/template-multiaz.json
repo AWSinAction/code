@@ -6,6 +6,25 @@
 			"Description": "Key Pair name",
 			"Type": "AWS::EC2::KeyPair::KeyName",
 			"Default": "mykey"
+		},
+		"BlogTitle": {
+			"Description": "The title of the blog.",
+			"Type": "String",
+			"Default": "Amazon Web Services in Action - Example"
+		},
+		"AdminUsername": {
+			"Description": "A username for admin.",
+			"Type": "String",
+			"Default": "admin"
+		},
+		"AdminPassword": {
+			"Description": "A password for admin",
+			"Type": "String",
+			"NoEcho": "true"
+		},
+		"AdminEMail": {
+			"Description": "The email address of the administrator.",
+			"Type": "String"
 		}
 	},
 	"Mappings": {
@@ -235,13 +254,15 @@
 						"files": {
 							"/tmp/config": {
 								"content": {"Fn::Join": ["", [
-									"#!/bin/bash\n",
+									"#!/bin/bash -ex\n",
 									"cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php\n",
 									"sed -i \"s/'database_name_here'/'wordpress'/g\" wp-config.php\n",
 									"sed -i \"s/'username_here'/'wordpress'/g\" wp-config.php\n",
 									"sed -i \"s/'password_here'/'wordpress'/g\" wp-config.php\n",
-									"sed -i \"s/'localhost'/'", {"Fn::GetAtt": ["Database", "Endpoint.Address"]}, "'/g\" wp-config.php\n"
-								]]},
+									"sed -i \"s/'localhost'/'", {"Fn::GetAtt": ["Database", "Endpoint.Address"]}, "'/g\" wp-config.php\n",
+									"chmod -R 777 wp-content/ \n",
+									"curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \n",
+									"php wp-cli.phar core install --url=\"", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]}, "/wordpress\" --title=\"", {"Ref": "BlogTitle"}, "\" --admin_user=\"", {"Ref": "AdminUsername"}, "\" --admin_password=\"", {"Ref": "AdminPassword"}, "\" --admin_email=\"", {"Ref": "AdminEMail"}, "\" \n"								]]},
 								"mode": "000500",
 								"owner": "root",
 								"group": "root"
@@ -272,7 +293,7 @@
 				"KeyName": {"Ref": "KeyName"},
 				"AssociatePublicIpAddress": true,
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
-					"#!/bin/bash -xe\n",
+					"#!/bin/bash -ex\n",
 					"yum update -y aws-cfn-bootstrap\n",
 					"/opt/aws/bin/cfn-init -v --stack ", {"Ref": "AWS::StackName"}, " --resource LaunchConfiguration --region ", {"Ref": "AWS::Region"}, "\n",
 					"/opt/aws/bin/cfn-signal -e $? --stack ", {"Ref": "AWS::StackName"}, " --resource AutoScalingGroup --region ", {"Ref": "AWS::Region"}, "\n"
