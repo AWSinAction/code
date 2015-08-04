@@ -397,7 +397,7 @@
 						"Fn::Join": [
 							"",
 							[
-								"#!/bin/bash\n",
+								"#!/bin/bash -ex\n",
 								"aws configure set default.region `curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\\\" '{print $4}'`\n",
 								"INSTANCE_ID=`curl -s http://169.254.169.254/latest/meta-data/instance-id`\n",
 								"aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id ", {"Fn::GetAtt": ["ElasticIP", "AllocationId"]}, "\n",

@@ -223,6 +223,7 @@
 			"Type": "AWS::RDS::DBInstance",
 			"Properties": {
 				"AllocatedStorage": "5",
+				"BackupRetentionPeriod": "0",
 				"DBInstanceClass": "db.t2.micro",
 				"DBInstanceIdentifier": {"Ref": "BlogID"},
 				"DBName": "wordpress",
@@ -290,7 +291,7 @@
 						"files": {
 							"/tmp/config": {
 								"content": {"Fn::Join": ["", [
-									"#!/bin/bash\n",
+									"#!/bin/bash -ex\n",
 									"cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php\n",
 									"sed -i \"s/'database_name_here'/'wordpress'/g\" wp-config.php\n",
 									"sed -i \"s/'username_here'/'wordpress'/g\" wp-config.php\n",
@@ -335,7 +336,7 @@
 				"KeyName": {"Ref": "KeyName"},
 				"AssociatePublicIpAddress": true,
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
-					"#!/bin/bash -xe\n",
+					"#!/bin/bash -ex\n",
 					"yum update -y aws-cfn-bootstrap\n",
 					"/opt/aws/bin/cfn-init -v --stack ", {"Ref": "AWS::StackName"}, " --resource LaunchConfiguration --region ", {"Ref": "AWS::Region"}, "\n",
 					"/opt/aws/bin/cfn-signal -e $? --stack ", {"Ref": "AWS::StackName"}, " --resource AutoScalingGroup --region ", {"Ref": "AWS::Region"}, "\n"

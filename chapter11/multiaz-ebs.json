@@ -344,7 +344,7 @@
 						"Fn::Join": [
 							"",
 							[
-								"#!/bin/bash\n",
+								"#!/bin/bash -ex\n",
 								"wget http://pkg.jenkins-ci.org/redhat/jenkins-1.616-1.1.noarch.rpm\n",
 								"rpm --install jenkins-1.616-1.1.noarch.rpm\n",
 								"sed -i -e 's/JENKINS_ARGS=\\\"\\\"/JENKINS_ARGS=\\\"--argumentsRealm.passwd.admin=", {"Ref": "JenkinsAdminPassword"}, " --argumentsRealm.roles.admin=admin\\\"/g' /etc/sysconfig/jenkins\n",
