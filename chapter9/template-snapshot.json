@@ -232,7 +232,7 @@
 							}
 						},
 						"sources": {
-							"/var/www/html": "http://wordpress.org/latest.tar.gz"
+							"/var/www/html": "https://wordpress.org/wordpress-4.2.4.tar.gz"
 						},
 						"files": {
 							"/tmp/config": {

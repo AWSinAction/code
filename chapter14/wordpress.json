@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "AWS in Action: chapter 2 and chapter 9",
+	"Description": "AWS in Action: chapter 14",
 	"Parameters": {
 		"KeyName": {
 			"Description": "Key Pair name",
@@ -285,7 +285,7 @@
 							}
 						},
 						"sources": {
-							"/var/www/html": "http://wordpress.org/latest.tar.gz"
+							"/var/www/html": "https://wordpress.org/wordpress-4.2.4.tar.gz"
 						},
 						"files": {
 							"/tmp/config": {
