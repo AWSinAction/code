@@ -51,7 +51,7 @@
 				"ImageId": {"Fn::FindInMap": ["EC2RegionMap", {"Ref": "AWS::Region"}, "AmazonLinuxAMIHVMEBSBacked64bit"]},
 				"SubnetId": {"Ref": "Subnet"},
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
-					"#!/bin/bash\n",
+					"#!/bin/bash -ex\n",
 					"export IPSEC_PSK=", {"Ref": "IPSecSharedSecret"}, "\n",
 					"export VPN_USER=", {"Ref": "VPNUser"}, "\n",
 					"export VPN_PASSWORD=", {"Ref": "VPNPassword"}, "\n",
