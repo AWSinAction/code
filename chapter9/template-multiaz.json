@@ -261,7 +261,7 @@
 									"sed -i \"s/'password_here'/'wordpress'/g\" wp-config.php\n",
 									"sed -i \"s/'localhost'/'", {"Fn::GetAtt": ["Database", "Endpoint.Address"]}, "'/g\" wp-config.php\n",
 									"chmod -R 777 wp-content/ \n",
-									"curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \n",
+									"curl -O https://raw.githubusercontent.com/AWSinAction/builds/gh-pages/phar/wp-cli.phar \n",
 									"php wp-cli.phar core install --url=\"", {"Fn::GetAtt": ["LoadBalancer", "DNSName"]}, "/wordpress\" --title=\"", {"Ref": "BlogTitle"}, "\" --admin_user=\"", {"Ref": "AdminUsername"}, "\" --admin_password=\"", {"Ref": "AdminPassword"}, "\" --admin_email=\"", {"Ref": "AdminEMail"}, "\" \n"								]]},
 								"mode": "000500",
 								"owner": "root",
