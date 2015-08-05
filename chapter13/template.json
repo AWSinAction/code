@@ -159,7 +159,7 @@
       "Properties": {
         "ApplicationName": {"Ref": "EBWorkerApplication"},
         "Description": "Imagery worker: AWS in Action: chapter 13",
-        "SolutionStackName": "64bit Amazon Linux 2015.03 v1.4.4 running Node.js",
+        "SolutionStackName": "64bit Amazon Linux 2015.03 v1.4.6 running Node.js",
         "OptionSettings": [{
           "Namespace": "aws:autoscaling:launchconfiguration",
           "OptionName": "EC2KeyName",
@@ -326,7 +326,7 @@
       "Properties": {
         "ApplicationName": {"Ref": "EBServerApplication"},
         "Description": "Imagery server: AWS in Action: chapter 13",
-        "SolutionStackName": "64bit Amazon Linux 2015.03 v1.4.4 running Node.js",
+        "SolutionStackName": "64bit Amazon Linux 2015.03 v1.4.6 running Node.js",
         "OptionSettings": [{
           "Namespace": "aws:autoscaling:asg",
           "OptionName": "MinSize",
