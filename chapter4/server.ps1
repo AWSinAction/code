@@ -1,7 +1,10 @@
 # To start PowerShell scripts first start PowerShell as Administrator
 # to allow unsigned scripts to be executed. To do so enter:
-# Set-ExecutionPolicy remotesigned
+# Set-ExecutionPolicy Unrestricted
 # Close the PowerShell window (you don't need Administrator privileges to run the scripts)
+#
+# You also need to install the AWS Command Line Interface from http://aws.amazon.com/cli/
+#
 # Right click on the *.ps1 file and select Run with PowerShell
 $ErrorActionPreference = "Stop"
 
