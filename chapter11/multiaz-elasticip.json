@@ -398,7 +398,7 @@
 							"",
 							[
 								"#!/bin/bash -ex\n",
-								"aws configure set default.region `curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\\\" '{print $4}'`\n",
+								"aws configure set default.region ", {"Ref": "AWS::Region"},"\n",
 								"INSTANCE_ID=`curl -s http://169.254.169.254/latest/meta-data/instance-id`\n",
 								"aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id ", {"Fn::GetAtt": ["ElasticIP", "AllocationId"]}, "\n",
 								"wget http://pkg.jenkins-ci.org/redhat/jenkins-1.616-1.1.noarch.rpm\n",
