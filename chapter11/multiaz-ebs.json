@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Jenkins (CI server) running with Auto Scaling Group over multiple AZs",
+	"Description": "AWS in Action: chapter 11 (Jenkins (CI server) running with Auto Scaling Group over multiple AZs)",
 	"Parameters": {
 		"KeyName": {
 			"Description": "Key Pair name",

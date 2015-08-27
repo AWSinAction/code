@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "AWS in Action: chapter 12 Load Balancer",
+	"Description": "AWS in Action: chapter 12 (Load Balancer)",
 	"Parameters": {
 		"KeyName": {
 			"Description": "Key Pair name",

@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Jenkins (CI server) running on EC2 with AWS CloudWatch recovery",
+	"Description": "AWS in Action: chapter 11 (Jenkins (CI server) running on EC2 with AWS CloudWatch recovery)",
 	"Parameters": {
 		"KeyName": {
 			"Description": "Key Pair name",

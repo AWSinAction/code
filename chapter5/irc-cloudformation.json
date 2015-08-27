@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Creates a custom firewall for IRC server.",
+	"Description": "AWS in Action: chapter 5 (firewall for IRC server)",
 	"Parameters": {
 		"VPC": {
 			"Description": "Just select the one and only default VPC.",

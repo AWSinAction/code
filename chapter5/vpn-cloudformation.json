@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Starts an virtual server (EC2) with OpenSwan acting as VPN IPSec endpoint.",
+	"Description": "AWS in Action: chapter 5 (OpenSwan acting as VPN IPSec endpoint)",
 	"Parameters": {
 		"KeyName": {
 			"Description": "key for SSH access",
