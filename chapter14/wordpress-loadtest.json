@@ -395,7 +395,7 @@
 			"Properties": {
 				"EvaluationPeriods": "1",
 				"Statistic": "Average",
-				"Threshold": "80",
+				"Threshold": "60",
 				"AlarmDescription": "Alarm if CPU load is high.",
 				"Period": "60",
 				"AlarmActions": [{"Ref": "ScalingUpPolicy"}],
