@@ -370,8 +370,6 @@
 				"HealthCheckType": "ELB",
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
 				"Tags": [{
-					"ResourceType": "auto-scaling-group",
-					"ResourceId": "wordpress",
 					"PropagateAtLaunch": true,
 					"Value": "wordpress",
 					"Key": "Name"

@@ -246,8 +246,6 @@
 				"HealthCheckType": "EC2",
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
 				"Tags": [{
-					"ResourceType": "auto-scaling-group",
-					"ResourceId": "url2png-consumer",
 					"PropagateAtLaunch": true,
 					"Value": "url2png-consumer",
 					"Key": "Name"
