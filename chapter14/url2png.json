@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "AWS in Action: chapter 14 (url2png)",
+	"Description": "AWS in Action: chapter 14 (URL2PNG)",
 	"Parameters": {
 		"KeyName": {
 			"Description": "Key Pair name",
