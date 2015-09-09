@@ -271,7 +271,7 @@
 				},
 				"RuleAction": "allow",
 				"Egress": "false",
-				"CidrBlock": "0.0.0.0/0"
+				"CidrBlock": "10.0.0.0/16"
 			}
 		},
 		"NetworkAclEntryOutPublicSSHBastionSSH": {
@@ -566,7 +566,7 @@
 				},
 				"RuleAction": "allow",
 				"Egress": "true",
-				"CidrBlock": "0.0.0.0/0"
+				"CidrBlock": "10.0.0.0/16"
 			}
 		},
 		"NatServer": {
