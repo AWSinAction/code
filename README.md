@@ -12,4 +12,4 @@ Amazon Web Services in Action introduces you to computing, storing and networkin
 
 ## About the authors
 
-Andreas and Michael Wittig run a consultancy focused on AWS and web development. Together, they migrated the complete IT infrastructure of the first Bank in Germany to AWS. They have expertise in distributed system development and architecture, with experience in algorithmic trading and real-time analytics. They are proponents of the DevOps model.
+Andreas and Michael Wittig work as software engineers and consultants focusing on AWS, web and mobile application development. They work with clients all around the globe. Together, they migrated the complete IT infrastructure of the first Bank in Germany to AWS. They have expertise in distributed system development and architecture, algorithmic trading and real-time analytics. Andreas and Michael are proponents of the DevOps model. They are both AWS Certified Solutions Architects – Professional Level.
