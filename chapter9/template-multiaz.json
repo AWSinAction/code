@@ -167,7 +167,8 @@
 				},
 				"SecurityGroups": [{"Ref": "LoadBalancerSecurityGroup"}],
 				"Scheme": "internet-facing"
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"LoadBalancerSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
@@ -226,7 +227,8 @@
 				"VPCSecurityGroups": [{"Fn::GetAtt": ["DatabaseSecurityGroup", "GroupId"]}],
 				"DBSubnetGroupName": {"Ref": "DBSubnetGroup"},
 				"MultiAZ": true
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"DBSubnetGroup" : {
 			"Type" : "AWS::RDS::DBSubnetGroup",
@@ -314,7 +316,8 @@
 				"ResourceSignal": {
 					"Timeout": "PT10M"
 				}
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		}
 	},
 	"Outputs": {

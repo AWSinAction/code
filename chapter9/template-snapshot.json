@@ -167,7 +167,8 @@
 				},
 				"SecurityGroups": [{"Ref": "LoadBalancerSecurityGroup"}],
 				"Scheme": "internet-facing"
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"LoadBalancerSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
@@ -228,7 +229,8 @@
 				"PreferredMaintenanceWindow": "Sun:06:00-Sun:07:00",
 				"BackupRetentionPeriod": 3,
 				"PreferredBackupWindow": "05:00-06:00"
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"DBSubnetGroup" : {
 			"Type" : "AWS::RDS::DBSubnetGroup",
@@ -316,7 +318,8 @@
 				"ResourceSignal": {
 					"Timeout": "PT10M"
 				}
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		}
 	},
 	"Outputs": {
