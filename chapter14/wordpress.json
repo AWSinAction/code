@@ -174,7 +174,8 @@
 				"SecurityGroups": [{"Ref": "LoadBalancerSecurityGroup"}],
 				"Scheme": "internet-facing",
 				"CrossZone": "true"
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"LoadBalancerSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
@@ -366,7 +367,8 @@
 				"ResourceSignal": {
 					"Timeout": "PT10M"
 				}
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"ScalingUpPolicy": {
 			"Type": "AWS::AutoScaling::ScalingPolicy",

@@ -379,7 +379,8 @@
 			"Type": "AWS::EC2::EIP",
 			"Properties": {
 				"Domain": "vpc"
-			}
+			},
+			"DependsOn": "GatewayToInternet"
 		},
 		"LaunchConfiguration": {
 			"Type": "AWS::AutoScaling::LaunchConfiguration",
@@ -429,7 +430,8 @@
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
 				"HealthCheckGracePeriod": 600,
 				"HealthCheckType": "EC2"
-			}
+			},
+			"DependsOn": "GatewayToInternet"
 		}
 	},
 	"Outputs": {

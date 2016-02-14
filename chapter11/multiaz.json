@@ -379,7 +379,8 @@
 				"VPCZoneIdentifier": [{"Ref": "SubnetA"}, {"Ref": "SubnetB"}],
 				"HealthCheckGracePeriod": 600,
 				"HealthCheckType": "EC2"
-			}
+			},
+			"DependsOn": "GatewayToInternet"
 		}
 	}
 }
