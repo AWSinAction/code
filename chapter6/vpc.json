@@ -660,14 +660,14 @@
 				}],
 				"UserData": {"Fn::Base64": {"Fn::Join": ["", [
 					"#!/bin/bash -ex\n",
-					"yum -y install httpd24-2.4.12\n",
+					"yum -y install httpd\n",
 					"service httpd start\n",
 					"/opt/aws/bin/cfn-signal --stack ", {"Ref": "AWS::StackName"}, " --resource ApacheServer --region ", {"Ref": "AWS::Region"}, "\n"
 				]]}}
 			},
 			"CreationPolicy": {
 				"ResourceSignal": {
-					"Timeout": "PT5M"
+					"Timeout": "PT10M"
 				}
 			},
 			"DependsOn": "NatServer"
