@@ -592,7 +592,8 @@
 				"ResourceSignal": {
 					"Timeout": "PT5M"
 				}
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"BastionHost": {
 			"Type": "AWS::EC2::Instance",
@@ -607,7 +608,8 @@
 					"DeviceIndex": "0",
 					"GroupSet": [{"Ref": "SecurityGroup"}]
 				}]
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"VarnishServer": {
 			"Type": "AWS::EC2::Instance",
@@ -640,7 +642,8 @@
 				"ResourceSignal": {
 					"Timeout": "PT5M"
 				}
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"ApacheServer": {
 			"Type": "AWS::EC2::Instance",
