@@ -226,8 +226,7 @@
 				"MasterUserPassword": "wordpress",
 				"VPCSecurityGroups": [{"Fn::GetAtt": ["DatabaseSecurityGroup", "GroupId"]}],
 				"DBSubnetGroupName": {"Ref": "DBSubnetGroup"}
-			},
-			"DependsOn": "VPCGatewayAttachment"
+			}
 		},
 		"DBSubnetGroup" : {
 			"Type" : "AWS::RDS::DBSubnetGroup",
