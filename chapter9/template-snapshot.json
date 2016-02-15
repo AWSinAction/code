@@ -167,7 +167,8 @@
 				},
 				"SecurityGroups": [{"Ref": "LoadBalancerSecurityGroup"}],
 				"Scheme": "internet-facing"
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"LoadBalancerSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
@@ -316,7 +317,8 @@
 				"ResourceSignal": {
 					"Timeout": "PT10M"
 				}
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		}
 	},
 	"Outputs": {

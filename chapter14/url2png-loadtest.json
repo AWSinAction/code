@@ -250,7 +250,8 @@
 					"Value": "url2png-consumer",
 					"Key": "Name"
 				}]
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"ScalingUpPolicy": {
 			"Type": "AWS::AutoScaling::ScalingPolicy",
@@ -341,7 +342,8 @@
 					"GroupSet": [{"Ref": "SecurityGroup"}],
 					"SubnetId": {"Ref": "SubnetA"}
 				}]
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		}
 	}
 }

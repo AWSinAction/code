@@ -374,7 +374,8 @@
 				"TerminationPolicies": ["Default"],
 				"HealthCheckGracePeriod": 600,
 				"HealthCheckType": "EC2"
-			}
+			},
+			"DependsOn": "GatewayToInternet"
 		}
 	}
 }
