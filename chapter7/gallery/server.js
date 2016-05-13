@@ -1,6 +1,6 @@
 var express = require("express");
 var AWS = require("aws-sdk");
-var mu = require("mu2");
+var mu = require("mu2-updated");
 var uuid = require("uuid");
 var multiparty = require("multiparty");
 
@@ -43,7 +43,8 @@ function uploadImage(image, response) {
 		Bucket: bucket,
 		Key: uuid.v4(),
 		ACL: "public-read",
-		ContentLength: image.byteCount
+		ContentLength: image.byteCount,
+		ContentType: image.headers["content-type"]
 	};
 	s3.putObject(params, function(err, data) {
 		if (err) {
