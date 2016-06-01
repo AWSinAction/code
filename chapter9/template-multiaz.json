@@ -227,7 +227,8 @@
 				"VPCSecurityGroups": [{"Fn::GetAtt": ["DatabaseSecurityGroup", "GroupId"]}],
 				"DBSubnetGroupName": {"Ref": "DBSubnetGroup"},
 				"MultiAZ": true
-			}
+			},
+			"DependsOn": "VPCGatewayAttachment"
 		},
 		"DBSubnetGroup" : {
 			"Type" : "AWS::RDS::DBSubnetGroup",
