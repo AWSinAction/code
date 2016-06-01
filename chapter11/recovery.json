@@ -97,7 +97,6 @@
 		},
 		"InternetRoute": {
 			"Type": "AWS::EC2::Route",
-			"DependsOn": "GatewayToInternet",
 			"Properties": {
 				"RouteTableId": {
 					"Ref": "RouteTable"
@@ -106,7 +105,8 @@
 				"GatewayId": {
 					"Ref": "InternetGateway"
 				}
-			}
+			},
+			"DependsOn": "GatewayToInternet"			
 		},
 		"RouteTableAssociation": {
 			"Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -300,11 +300,11 @@
 		},
 		"ElasticIP": {
 			"Type": "AWS::EC2::EIP",
-			"DependsOn": "GatewayToInternet",
 			"Properties": {
 				"InstanceId": {"Ref": "Server"},
 				"Domain": "vpc"
-			}
+			},
+			"DependsOn": "GatewayToInternet"
 		},
 		"Server": {
 			"Type": "AWS::EC2::Instance",
@@ -328,7 +328,8 @@
 						"Value": "jenkins-recovery"
 					}
 				]
-			}
+			},
+			"DependsOn": "GatewayToInternet"
 		},
 		"RecoveryAlarm": {
 			"Type": "AWS::CloudWatch::Alarm",

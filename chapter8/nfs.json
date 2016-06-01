@@ -186,12 +186,12 @@
 					"/opt/aws/bin/cfn-signal -e $? --stack ", {"Ref": "AWS::StackName"}, " --resource Client1 --region ", {"Ref": "AWS::Region"}, "\n"
 				]]}}
 			},
-			"DependsOn": "WaitCondition",
 			"CreationPolicy": {
 				"ResourceSignal": {
 					"Timeout": "PT10M"
 				}
-			}
+			},
+			"DependsOn": "WaitCondition"
 		},
 		"Client2": {
 			"Type": "AWS::EC2::Instance",
@@ -210,12 +210,12 @@
 					"/opt/aws/bin/cfn-signal -e $? --stack ", {"Ref": "AWS::StackName"}, " --resource Client2 --region ", {"Ref": "AWS::Region"}, "\n"
 				]]}}
 			},
-			"DependsOn": "WaitCondition",
 			"CreationPolicy": {
 				"ResourceSignal": {
 					"Timeout": "PT10M"
 				}
-			}
+			},
+			"DependsOn": "WaitCondition"
 		}
 	},
 	"Outputs": {

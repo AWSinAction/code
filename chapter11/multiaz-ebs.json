@@ -107,7 +107,6 @@
 		},
 		"InternetRoute": {
 			"Type": "AWS::EC2::Route",
-			"DependsOn": "GatewayToInternet",
 			"Properties": {
 				"RouteTableId": {
 					"Ref": "RouteTable"
@@ -116,7 +115,8 @@
 				"GatewayId": {
 					"Ref": "InternetGateway"
 				}
-			}
+			},
+			"DependsOn": "GatewayToInternet"
 		},
 		"RouteTableAssociationA": {
 			"Type": "AWS::EC2::SubnetRouteTableAssociation",
