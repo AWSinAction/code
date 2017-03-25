@@ -48,7 +48,7 @@
 			"sa-east-1": {"az1": "sa-east-1a", "az2": "sa-east-1b"},
 			"us-east-1": {"az1": "us-east-1d", "az2": "us-east-1e"},
 			"us-west-1": {"az1": "us-west-1a", "az2": "us-west-1c"},
-			"us-west-2": {"az1": "us-west-2a", "az2": "us-west-2b"},
+			"us-west-2": {"az1": "us-west-2a", "az2": "us-west-2b"}
 		}
 	},
 	"Resources": {
