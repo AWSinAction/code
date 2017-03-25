@@ -38,6 +38,17 @@
 			"us-east-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-1ecae776"},
 			"us-west-1": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-d114f295"},
 			"us-west-2": {"AmazonLinuxAMIHVMEBSBacked64bit": "ami-e7527ed7"}
+		},
+		"AZRegionMap": {
+			"ap-northeast-1": {"az1": "ap-northeast-1a", "az2": "ap-northeast-1c"},
+			"ap-southeast-1": {"az1": "ap-southeast-1a", "az2": "ap-southeast-1b"},
+			"ap-southeast-2": {"az1": "ap-southeast-2a", "az2": "ap-southeast-2b"},
+			"eu-central-1": {"az1": "eu-central-1a", "az2": "eu-central-1b"},
+			"eu-west-1": {"az1": "eu-west-1a", "az2": "eu-west-1b"},
+			"sa-east-1": {"az1": "sa-east-1a", "az2": "sa-east-1b"},
+			"us-east-1": {"az1": "us-east-1d", "az2": "us-east-1e"},
+			"us-west-1": {"az1": "us-west-1a", "az2": "us-west-1c"},
+			"us-west-2": {"az1": "us-west-2a", "az2": "us-west-2b"}
 		}
 	},
 	"Resources": {
@@ -63,7 +74,7 @@
 		"SubnetA": {
 			"Type": "AWS::EC2::Subnet",
 			"Properties": {
-				"AvailabilityZone": {"Fn::Select": ["0", {"Fn::GetAZs": ""}]},
+				"AvailabilityZone": {"Fn::FindInMap": ["AZRegionMap", {"Ref": "AWS::Region"}, "az1"]},
 				"CidrBlock": "172.31.38.0/24",
 				"VpcId": {"Ref": "VPC"}
 			}
@@ -71,7 +82,7 @@
 		"SubnetB": {
 			"Type": "AWS::EC2::Subnet",
 			"Properties": {
-				"AvailabilityZone": {"Fn::Select": ["1", {"Fn::GetAZs": ""}]},
+				"AvailabilityZone": {"Fn::FindInMap": ["AZRegionMap", {"Ref": "AWS::Region"}, "az2"]},
 				"CidrBlock": "172.31.37.0/24",
 				"VpcId": {"Ref": "VPC"}
 			}
