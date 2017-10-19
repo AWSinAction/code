@@ -216,6 +216,7 @@
 		},
 		"Database": {
 			"Type": "AWS::RDS::DBInstance",
+			"DeletionPolicy": "Delete",
 			"Properties": {
 				"AllocatedStorage": "5",
 				"DBInstanceClass": "db.t2.micro",
