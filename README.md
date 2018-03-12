@@ -2,7 +2,7 @@
 
 ![Cover of Amazon Web Services in Action](http://manning.com/wittig/wittig_cover150.jpg)
 
-Code of Amazon Web Services in Action http://manning.com/wittig?a_aid=mwittig&amp;a_bid=cc17df85
+Code of Amazon Web Services in Action http://bit.ly/amazon-web-services-in-action
 
 ## About the book
 
